@@ -1,0 +1,5 @@
+TODO estudiar shell
+DONE ver video MIT
+TODO practicar grep
+NOTE preguntar dudas
+TODO crear README
