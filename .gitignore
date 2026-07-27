@@ -11,3 +11,6 @@ venv/
 
 # macOS
 .DS_Store
+
+# all files with alternate data streams (ADS) on Windows
+*:Zone.Identifier
