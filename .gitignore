@@ -1,16 +1,30 @@
 # Python
 __pycache__/
 *.pyc
-
-# Virtual environments
 .venv/
 venv/
-
-# VS Code (si no quieres compartir la configuración)
+ 
+# Secretos y credenciales — nunca versionar
+.env
+*.pem
+*.key
+credentials.json
+service-account*.json
+ 
+# Datos: no versionar los crudos, sí las muestras chicas
+data/raw/*
+!data/raw/*.sample.csv
+data/processed/*
+!data/processed/.gitkeep
+ 
+# Logs
+logs/
+*.log
+ 
+# Editores
 .vscode/
-
-# macOS
+.idea/
+ 
+# Sistema
 .DS_Store
-
-# all files with alternate data streams (ADS) on Windows
 *:Zone.Identifier

@@ -1,39 +1,35 @@
 # Data Engineering Roadmap
 
-Este repositorio documenta mi ruta de aprendizaje para convertirme en Data Engineer / Big Data Engineer.
+Ruta de aprendizaje hacia Data Engineer / Analytics Engineer.
+Iniciada en julio de 2026. Bitácora de sesiones en [`LOG.md`](LOG.md).
 
-## Objetivo
+## Stack objetivo
 
-Construir habilidades prácticas en:
+**Base:** Linux · Bash · Git · Python · SQL
+**Datos:** PostgreSQL · dbt · Airflow · Spark
+**Infra:** Docker · una nube (por definir en el mes 10)
 
-- Linux y terminal
-- Git y GitHub
-- Python
-- SQL
-- PostgreSQL
-- Docker
-- dbt
-- Airflow
-- Spark
-- Kafka
-- Cloud
+## Estructura
+
+| Carpeta | Qué contiene | Organizado por |
+|---|---|---|
+| `notes/` | Apuntes propios, máximo 1 página cada uno | **tema** |
+| `practice/` | Ejercicios de cursos y retos | **curso / fuente** |
+| `projects/` | Proyectos completos, end-to-end | proyecto |
+| `scripts/` | Utilidades reutilizables propias | — |
+| `data/` | Datos de práctica (`raw/` está en .gitignore) | — |
+
+Reglas: las carpetas nacen cuando tienen su primer archivo real, nunca antes.
+La tecnología es el **segundo** nivel (`notes/bash/`, `practice/missing-semester/`), no el primero.
+
+## Convenciones
+
+- Nombres en minúsculas, `kebab-case`, sin espacios, sin acentos, sin paréntesis.
+- Salidas de terminal en bloques de código, nunca capturas de pantalla.
+- Cada nota sigue [`notes/_plantilla.md`](notes/_plantilla.md). Si no cabe en una página, se parte.
+- Toda sesión de estudio termina en un commit.
 
 ## Progreso
 
-- [x] Missing Semester - Lecture 1: The Shell
-- [ ] Missing Semester - Lecture 2: Shell Tools and Scripting
-- [ ] Git básico
-- [ ] Python básico
-- [ ] SQL básico
-
-## Estructura del repositorio
-
-```text
-notes/      Apuntes teóricos
-practice/   Ejercicios pequeños por curso
-python/     Ejercicios de Python
-sql/        Consultas SQL
-projects/   Proyectos completos
-scripts/    Scripts útiles
-data/       Datos de práctica
-reports/    Reportes y resultados
+Ver [`LOG.md`](LOG.md) — una línea por sesión, append-only.
+Dudas en cola: [`pendientes.md`](pendientes.md).
