@@ -1,0 +1,8 @@
+# Terminadores de línea: LF en el repo y en el disco, siempre.
+* text=auto eol=lf
+
+# Explícito para lo que bash ejecuta.
+*.sh text eol=lf
+
+# Binarios: git no los toca.
+*.png binary
