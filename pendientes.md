@@ -9,4 +9,11 @@
 
 - [ ] `!` 2026-08-02 — repartir conclusiones de Bandit a notes/bash/ (find -size, ! de negación, 2>/dev/null, ./ con guiones, file por contenido)
 - [ ] `~` 2026-08-02 — xargs: convierte texto en argumentos. Sale en la lección 2
-- [ ] `~` 2026-08-02 — codificaciones y terminadores de línea (NEL, CRLF, latin1 vs utf8)
+- [X] `~` 2026-08-02 — codificaciones y terminadores de línea (NEL, CRLF, latin1 vs utf8)
+ → RESUELTA 08-03: .gitattributes con eol=lf + 3 archivos normalizados con sed.
+
+- [ ] `~` 2026-08-03 — fd y ripgrep: instalar con apt y comparar contra find/grep
+- [ ] `~` 2026-08-03 — tldr: man pages con ejemplos. ¿Reemplaza a explainshell?
+- [ ] `~` 2026-08-03 — fzf: convierte Ctrl-R en búsqueda difusa. Requiere instalación aparte
+- [ ] `?` 2026-08-03 — stty -ixon para liberar Ctrl-S (búsqueda hacia adelante)
+- [ ] `!` 2026-08-03 — ¿parto entorno.md en alias.md + entorno.md? Inodos y symlinks no son configuración de shell

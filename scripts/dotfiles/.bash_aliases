@@ -1,0 +1,24 @@
+# Navegación
+alias ..='cd ..'
+alias ...='cd ../..'
+
+# Corrección de errores comunes
+alias dc='cd'
+alias sl='ls'
+
+# Listados
+alias ll='ls -alF'
+alias la='ls -A'
+
+# Git
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+
+# Python
+alias py='python3'
+
+# Limpiar pantalla
+alias c='clear'
+

@@ -28,3 +28,6 @@ logs/
 # Sistema
 .DS_Store
 *:Zone.Identifier
+
+# Git
+.git-credentials
