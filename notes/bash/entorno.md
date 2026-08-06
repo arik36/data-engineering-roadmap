@@ -76,16 +76,16 @@ alias rm='rm -I'        # pregunta al borrar más de 3 archivos (I mayúscula)
 
 ### Cómo se rompe
 
-> **Estos alias son una muleta local, no un hábito.** Si te acostumbras a que `rm` siempre
-> pregunta, el día que estés en un servidor sin tu `.bashrc` vas a borrar algo sin red. El
-> alias protege en tu máquina; no enseña cuidado.
+> **Estos alias son una muleta local, no un hábito.** Si nos acostumbramos a que `rm` siempre
+> pregunte, el día que estemos en un servidor sin nuestro `.bashrc` vamos a borrar algo sin red. El
+> alias protege en nuestra máquina; no enseña cuidado.
 
 ---
 
 # 2. El límite real de los alias, y dónde entran las funciones
 
-La limitación **no** es "los alias no reciben argumentos". Sí los reciben — el argumento se
-pega al final de la sustitución:
+La limitación **no** es "los alias no reciben argumentos". Sí los reciben — **siempre y cuando** el argumento se
+coloque al final de la sustitución:
 
 ```bash
 alias dc='cd'
@@ -109,8 +109,8 @@ find: paths must precede expression: `/tmp/f'
 buscar() { find "$1" -name "*.md" -type f; }
 ```
 
-**Criterio:** banderas fijas y argumento al final → alias. Necesitas decidir *dónde* va el
-argumento → función.
+**Criterio:** banderas fijas y argumento al final → alias. 
+Necesitas decidir *dónde* va el argumento → función.
 
 ### Cómo se rompe
 
@@ -171,8 +171,19 @@ que actives `shopt -s expand_aliases`.
 > **Un alias que tapa un comando real es invisible hasta que falla.** Con
 > `alias grep='grep --color'`, el día que un script se comporte raro, `type grep` te lo dice
 > y `which grep` no. `which` es un programa externo que solo mira `$PATH`; `type` es un
-> builtin y conoce el orden real: **alias → función → builtin → `$PATH`**. Para depurar,
-> `type`.
+> builtin (forma parte del propio Bash, conoce el entorno interno de la shell.) 
+> y conoce el orden real: **alias → función → builtin → `$PATH`**. 
+> Para depurar, `type`.
+
+## vistazo a como type procesa
+```bash
+Lectura de la línea
+        ↓
+Expansión de alias
+        ↓
+Resolución del comando:
+función → builtin → ejecutable de $PATH
+```
 
 ---
 
@@ -182,6 +193,18 @@ que actives `shopt -s expand_aliases`.
 |---|---|
 | **interactive, no login** | `~/.bashrc` |
 | **login** | `/etc/profile`, luego **el primero que exista** de `~/.bash_profile`, `~/.bash_login`, `~/.profile` |
+
+`Interactiva` y `login` describen dos propiedades diferentes de una shell.
+- Una shell interactiva espera que una persona escriba comandos y responde continuamente.
+
+> En términos de Bash
+> **Una login shell suele:**
+> configurar el entorno general (PATH, variables de entorno, etc.),
+> leer /etc/profile y luego ~/.bash_profile, ~/.bash_login o ~/.profile.
+>
+> **Una no-login shell normalmente:**
+> asume que el entorno ya está preparado,
+> solo carga la configuración interactiva (~/.bashrc si es interactiva).
 
 Fíjate: **`.bashrc` no aparece en la lista de login.** En teoría, una sesión de login no
 leería los alias.
@@ -243,6 +266,7 @@ $ source ~/.bashrc
 $ . ~/.bashrc          # idéntico, . es sinónimo de source
 ```
 
+
 ## Por qué no sirve ejecutar el archivo como script
 
 ```bash
@@ -267,7 +291,17 @@ Es la contracara de `export`: los hijos heredan del padre, nunca al revés.
 
 ## Por qué `source` infla el `$PATH`
 
-El patrón estándar para agregar una ruta es:
+> **Recordemos: ¿Qué hace `source` realmente?**
+> Bash lee el archivo y ejecuta todas sus líneas en la terminal actual.
+
+Supongamos que hacemos algo como lo siguiente:
+
+```bash
+source ~/.bashrc
+```
+
+El patrón estándar para agregar una ruta usualmente es `export PATH="$PATH:otra-dirección"` 
+supon que en nuestro `.bashrc` tenemos esto:
 
 ```bash
 export PATH="$PATH:/opt/mis-scripts"
@@ -283,7 +317,7 @@ inicio:      /usr/bin:/bin
 ```
 
 No es que `source` haga algo raro: la línea es **acumulativa por diseño** y `source` la corre
-otra vez. Lo mismo pasaría tecleándola dos veces a mano.
+otra vez, entonces termina agregando la misma ruta una y otra vez. Lo mismo pasaría tecleándola dos veces a mano.
 
 ### Cómo se rompe
 
@@ -426,9 +460,9 @@ el enlace y el destino son dos objetos distintos del sistema de archivos.
 > nada" cuando en realidad hay un symlink roto de una corrida anterior. En instaladores,
 > comprobar `-L` además de `-e`.
 
-## Ya tengo symlinks vivos
+## Ejemplos de symlinks vivos
 
-En mi home:
+En home:
 
 ```
 lrwxrwxrwx  1 mlizz mlizz  23 .aws   -> /mnt/c/Users/mlizz/.aws/
@@ -441,9 +475,24 @@ viven del lado de Windows.
 
 ---
 
+## Dotfiles: sin punto en el repo, con punto al enlazar
+
+Los dotfiles se guardan como `bashrc` y `bash_aliases` en `scripts/dotfiles/`,
+sin punto. El `install.sh` agrega el punto al crear el enlace.
+
+Motivo: un archivo con punto se esconde de `ls`, del editor y de la vista de
+GitHub. Y un bucle `for f in "$DIR"/*` no lo encuentra — el glob `*` no
+coincide con nombres que empiezan con punto.
+
+Efecto lateral: VS Code deja de resaltar la sintaxis, porque detecta el
+lenguaje por el nombre. Se arregla con `files.associations` en
+`.vscode/settings.json`.
+
+No ponerles `.sh`: el bucle generaría `~/.bashrc.sh`, que bash nunca lee.
+
+
 ## Pendientes
 
-- [ ] Leer `~/.bash_aliases` (318 bytes, 16 jul) — ¿qué hay ahí ya? ¿choca con algo nuevo?
 - [ ] Correr `shopt login_shell` en una terminal nueva de WSL y anotar el resultado
 - [ ] `2>&1` — sigue abierta desde `redireccion.md`
 - [ ] `find -exec` y el `\;` — con la gramática de operators/options/tests/actions
