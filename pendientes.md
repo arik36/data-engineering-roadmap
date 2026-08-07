@@ -22,3 +22,11 @@
 - [ ] `~` 2026-08-05 — readlink -f: probar la variante creando el enlace en ~/bin
 - [ ] `~` 2026-08-05 — enlaces duros (ln sin -s), inodos, por qué no cruzan discos
 - [ ] `?` 2026-08-05 — .vscode/settings.json con files.associations para que resalte bashrc sin punto
+
+- [ ] `!` 2026-08-06 — install.sh asume que todo dotfile va a ~/.<nombre>. No sirve para ~/.ssh/config ni para ~/.config/*. Necesita mapeo explícito origen→destino
+- [ ] `!` 2026-08-06 — IdentityFile en ~/.ssh/config: hace falta para Bandit 13 (clave privada + permisos)
+- [ ] `?` 2026-08-06 — arrancar ssh-agent desde el bashrc sin levantar uno nuevo por terminal
+- [ ] `~` 2026-08-06 — probar PasswordAuthentication no en /etc/ssh/sshd_config contra localhost
+- [ ] `~` 2026-08-06 — ~/.hushlogin para quitar el banner de cada conexión
+- [ ] `?` 2026-08-06 — verificar que HISTCONTROL incluya ignorespace; si no, agregarlo a bash_aliases
+- [ ] `!` 2026-08-06 — sacar permisos y chmod de ssh.md a notes/bash/permisos.md (aplica a Bandit, Docker, S3)

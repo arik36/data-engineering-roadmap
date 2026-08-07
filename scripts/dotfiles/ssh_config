@@ -1,0 +1,7 @@
+Host bandit
+    HostName bandit.labs.overthewire.org
+    User bandit14
+    Port 2220
+
+Host local
+    HostName localhost
