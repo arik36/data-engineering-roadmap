@@ -30,3 +30,10 @@
 - [ ] `~` 2026-08-06 — ~/.hushlogin para quitar el banner de cada conexión
 - [ ] `?` 2026-08-06 — verificar que HISTCONTROL incluya ignorespace; si no, agregarlo a bash_aliases
 - [ ] `!` 2026-08-06 — sacar permisos y chmod de ssh.md a notes/bash/permisos.md (aplica a Bandit, Docker, S3)
+
+- [ ] `?` 2026-08-07 — repasar notación numérica de chmod: 600 vs 644 vs 700. Los confundí en la recuperación
+
+- [ ] `!` 2026-08-07 — asimetría de permisos: archivo `.md` ilegible mata el script, subdirectorio ilegible no. ¿Cómo se detecta el fracaso de un comando al otro lado de `< <(...)`?
+- [ ] `?` 2026-08-07 — `nullglob`: probar el glob sin coincidencias antes de meterlo a contar-lineas.sh. `help shopt`
+- [ ] `?` 2026-08-07 — decidir si "no diste directorio" y "el directorio no existe" comparten mensaje. Hoy comparten y el mensaje miente un poco
+- [ ] `~` 2026-08-07 — `local var=$(cmd)` traga el estado de salida. Aplica cuando meta funciones, no antes
