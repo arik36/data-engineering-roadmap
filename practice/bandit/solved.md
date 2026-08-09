@@ -247,8 +247,99 @@ Cuando algo no aparezca y no entienda por qué, es mejor quitar el filtro y leer
 cuidadosa es mandarlos a un archivo (`2>errores.txt`) para revisarlos después en vez de tirarlos.
 
 ---
+## Nivel 7 → 8
 
+**Objetivo.** La contraseña para el siguiente nivel está guardada en el archivo data.txt junto 
+a la palabra millionth
+
+```bash
+bandit7@bandit:~$ ls
+data.txt
+bandit7@bandit:~$ grep "millionth" data.txt
+millionth       <contraseña>
+```
+
+---
+## Nivel 8 → 9
+
+**Objetivo.** La contraseña para el siguiente nivel está almacenada en el archivo data.txt 
+y es la única línea de texto que aparece solo una vez
+
+
+```bash
+bandit8@bandit:~$ sort data.txt | uniq -c
+     10 0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+     10 1cKKjk7M0Pl2cPUbYgc9W4307bYC0ohF
+     10 1PesxCa7cihwvCvzBeKAcjKkjUwp7i2z
+ 1 <contraseña>
+```
+
+**Intento fallido.**
+```bash
+bandit8@bandit:~$ sort -u data.txt
+0LTDNpAmqqfuE0FlE0ksGf6c0Kraspzs
+1cKKjk7M0Pl2cPUbYgc9W4307bYC0ohF
+1PesxCa7cihwvCvzBeKAcjKkjUwp7i2z
+```
+
+**Errores importantes.**
+creía que sort -u dejaba únicamente las líneas que no tenían duplicadas pero realmente solo muestra
+todas las líneas como una única repetición ya que borra las duplicadas.
+
+
+**Qué aprendí.**
+sort -u elimina las líneas duplicadas y muestra cada línea diferente una sola vez, aunque aparezca cientos
+o miles de veces en el archivo.
+-u en uniq significa lo contrario que en sort: imprime solo las líneas que aparecen exactamente una vez. 
+Una línea de salida, la contraseña sola. Comparado con uniq -d, que imprime solo las repetidas.
+
+---
+
+## Nivel 9 → 10
+
+**Objetivo.** La contraseña para el siguiente nivel está almacenada en el archivo data.txt en una 
+de las pocas cadenas legibles por humanos, precedida por varios caracteres «=».
+
+
+```bash
+bandit9@bandit:~$ ls
+data.txt
+bandit9@bandit:~$ strings data.txt
+===== <contraseña>
+```
+
+**Solución Mejorada**
+```bash
+bandit9@bandit:~$ strings data.txt | grep "==="
+===== <contraseña>
+```
+
+**Qué aprendí.**
+Strings existe porque el archivo es binario, y cat sobre un binario ensucia la terminal 
+(a veces la deja inutilizable; se arregla con reset). strings extrae solo las secuencias imprimibles 
+de al menos 4 caracteres.
+
+---
+
+## Nivel 10 → 11
+
+**Objetivo.** La contraseña para el siguiente nivel está almacenada en el archivo data.txt, que contiene datos 
+codificados en base64
+
+```bash
+bandit10@bandit:~$ ls
+data.txt
+bandit10@bandit:~$ man base64
+bandit10@bandit:~$ base64 -d data.txt
+The password is <contraseña>
+```
+
+**Qué aprendí.**
+base64 no es cifrado, es codificación: cualquiera lo revierte, no protege nada. Sirve para transportar binarios
+por canales que solo aceptan texto
+
+--
 ## Pendientes
 
 
-- [ ] Niveles 7 → 14
+- [ ] Niveles 11 → 14
