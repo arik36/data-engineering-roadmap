@@ -10,3 +10,5 @@ Una línea por sesión: fecha · qué hice · qué quedó pendiente.
 - 2026-08-07 · BashPitfalls 1→15; `scripts/contar-lineas.sh` con `set -euo pipefail`, shellcheck limpio; `${1:-}`, asignación vs `((...))` bajo `set -e`, sustitución de proceso vs pipe · falta `notes/bash/errores.md`; `find` oculta su estado de salida — evaluar glob
 - 2026-08-08 · Cuestionario de 10 predicciones (5 fallidas, 4 corregidas en terminal);
   Bandit 7→10; poda de pendientes · falta el glob del for y la tabla de chmod
+
+- 2026-08-10 · Symlinks con predicción (destino relativo, -sfn vs -sf, inodos, readlink -e); install.sh reescrito con función `enlazar`, mapeo explícito y validación de origen y destino; ssh_config movido a ssh/config · falta shellcheck en CI, IdentityFile y precedencia de ssh_config → sábado
