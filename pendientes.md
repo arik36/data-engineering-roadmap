@@ -42,3 +42,8 @@
 - [ ] `?` 2026-08-10 — `$0` cambia con `source`: dirname devuelve otra cosa. Correr /tmp/f.sh ejecutado vs source y comparar
 - [ ] `~` 2026-08-10 — `ln -sr` para enlaces relativos: ¿conviene sobre rutas absolutas en dotfiles?
 - [ ] `!` 2026-08-10 — install.sh: si falla un enlace, ¿abortar o seguir con los demás? Hoy sigue y sale con el estado del último. Decidir
+
+- [ ] `!` 2026-08-11 — install.sh no fija permisos. git solo versiona el bit de ejecución: al clonar, ~/.ssh/config nace en 644 y ssh lo rechaza. Falta chmod 600 al archivo y 700 al directorio
+- [ ] `?` 2026-08-11 — `ln -sfT` vs `-sfn`: en qué se diferencian. man ln
+- [ ] `~` 2026-08-11 — entornos virtuales de Python: por qué existen y qué se le dice a VS Code. SEPTIEMBRE, con dos venv reales y versiones distintas de pandas
+- [ ] `~` 2026-08-11 — dev containers y Remote SSH de VS Code. Cuando llegue Docker

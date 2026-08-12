@@ -339,7 +339,54 @@ base64 no es cifrado, es codificación: cualquiera lo revierte, no protege nada.
 por canales que solo aceptan texto
 
 --
+
+## Nivel 11 → 12
+
+**Objetivo.** La contraseña para el siguiente nivel está almacenada en el archivo data.txt, donde
+ todas las letras minúsculas (a-z) y mayúsculas (A-Z) se han rotado 13 posiciones
+
+
+```bash
+bandit11@bandit:~$strings data.txt| tr 'a-z' 'nopqrstuvwxyzabcdefghijklm' | tr 'A-Z' 'NOPQRSTUVWXYZABCDEFGHIJKLM'
+<contraseña>
+```
+
+**Errores importantes.**
+tenía la idea de que tr podía recibir regex. Luego fui diferenciando:
+grep / sed → trabajan con patrones/regex
+tr          → trabaja con conjuntos de caracteres
+
+**Qué aprendí.**
+tr hace correspondencias por posición.
+
+---
+## Nivel 12 → 13
+
+**Objetivo.** The password for the next level is stored in the file data.txt, which is a hexdump of a file that has been repeatedly compressed. For this level it may be useful to create a directory under /tmp in which you can work. Use mkdir with a hard to guess directory name. Or better, use the command “mktemp -d”. Then copy the datafile using cp, and rename it using mv (read the manpages!)
+
+
+```bash
+| Tipo de archivo | Herramienta para descomprimir/extraer |
+| --------------- | ------------------------------------- |
+| **Hexdump**     | `xxd -r`                              |
+| **gzip**        | `gzip -dc`                            |
+| **bzip2**       | `bzcat`                               |
+| **tar**         | `tar -xf`                             |
+
+<contraseña>
+```
+
+**Errores importantes.**
+varias veces intente adivinar el siguiente paso antes de dejar que la herramienta te dijera qué estaba pasando.
+cuando en realidad el método correcto terminó siendo:
+file → identificar → elegir herramienta → comprobar → repetir
+Y eso es justamente una habilidad muy importante en Linux: diagnosticar antes de actuar.
+
+**Qué aprendí.**
+diagnosticar antes de actuar.
+
+---
 ## Pendientes
 
 
-- [ ] Niveles 11 → 14
+- [ ] Niveles 13 → 14

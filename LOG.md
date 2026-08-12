@@ -12,3 +12,5 @@ Una línea por sesión: fecha · qué hice · qué quedó pendiente.
   Bandit 7→10; poda de pendientes · falta el glob del for y la tabla de chmod
 
 - 2026-08-10 · Symlinks con predicción (destino relativo, -sfn vs -sf, inodos, readlink -e); install.sh reescrito con función `enlazar`, mapeo explícito y validación de origen y destino; ssh_config movido a ssh/config · falta shellcheck en CI, IdentityFile y precedencia de ssh_config → sábado
+
+- 2026-08-11 · L3 leída como mapa (vim saltado por decisión, LSP e IA de contexto); supervivencia en vim + EDITOR; Bandit 11→12 (tr, file por contenido, cadena de descompresión); notes/bash/archivos-y-enlaces.md escrita, consolida enlaces-simbolicos.md y entorno.md §7–8 · corregir §12 del plan: vim no se eliminó en 2026, se condensó en L3
