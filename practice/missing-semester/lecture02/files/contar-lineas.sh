@@ -20,19 +20,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+log() {
+    local nivel="$1"; shift
+    printf '%s [%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$nivel" "$*" >&2
+}
+
 directorio="${1:-}"
 
 if [ -d "$directorio" ]; then
     contador=0
+    log INFO "iniciamos el conteo de líneas en archivos .md en el directorio $directorio"
 
     while read -r archivo; do
         lineas=$(wc -l < "$archivo")
         contador=$((contador + lineas))
     done < <(find "$directorio" -type f -name "*.md")
 
-    echo "El directorio $directorio contiene $contador líneas en archivos .md"
+    echo "$contador"
+    log INFO "conteo terminado: $contador líneas en $directorio"
 else
-    echo "Error: el directorio no existe" >&2
+    #echo "Error: el directorio no existe" >&2
+    log ERROR "el directorio $directorio no existe"
     exit 1
 fi
 

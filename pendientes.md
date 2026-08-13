@@ -52,3 +52,8 @@
 
 - [ ] `~` 2026-08-12 —systemd y journalctl (cuando haya un servicio), arrays asociativos (cuando el logger necesite filtrar), 
       lsof +L1  (ya lo entiendes conceptualmente; lo reproduces cuando un disco se llene de verdad).
+
+- [ ] `!` 2026-08-13 — el intercambio: `find | while` da PIPESTATUS pero pierde el contador; `while < <(find)` conserva el contador pero pierde el estado. Cómo tener las dos → viernes
+- [ ] `?` 2026-08-13 — `IdentitiesOnly yes`: probarlo cuando tenga más de una clave
+- [ ] `~` 2026-08-13 — `$$` vs `$BASHPID` en subshells. Aplica cuando depure procesos
+- [ ] `?` 2026-08-13 — `Host local` no tiene User: confirmar si es intencional

@@ -1,7 +1,7 @@
 # Bandit — OverTheWire
 
 Reto de línea de comandos. Cada nivel entrega la contraseña del siguiente.
-Sitio: `overthewire.org/wargames/bandit/` · Niveles 0–14 · Iniciado 2026-08-02
+Sitio: `overthewire.org/wargames/bandit/` · Niveles 0–15 · Iniciado 2026-08-02
 
 > Las contraseñas **no** van en este archivo. Están en `~/bandit-passwords.txt`, fuera del repo.
 
@@ -386,7 +386,323 @@ Y eso es justamente una habilidad muy importante en Linux: diagnosticar antes de
 diagnosticar antes de actuar.
 
 ---
+
+## Nivel 13 → 14
+
+**Objetivo.** La contraseña del siguiente nivel está en `/etc/bandit_pass/bandit14` y **solo
+la puede leer el usuario `bandit14`**. En el home hay una clave privada SSH para entrar como
+ese usuario.
+
+Primero confirmé por qué no se puede leer directo:
+
+```bash
+bandit13@bandit:~$ ls -l /etc/bandit_pass/bandit14
+-r-------- 1 bandit14 bandit14 33 Jun 24 14:58 /etc/bandit_pass/bandit14
+```
+
+`-r--------` = solo lectura, solo para el dueño, y el dueño es `bandit14`. Ni el grupo ni
+los demás tienen nada. Así que no hay forma de leerlo siendo `bandit13`: hay que **ser**
+`bandit14`.
+
+Lo evidente sería `ssh bandit14@bandit.labs.overthewire.org -p 2220`, pero no tengo la
+contraseña — que es justamente lo que busco. Por eso el nivel entrega la otra vía de
+autenticación: una clave privada.
+
+```bash
+bandit13@bandit:~$ ls
+HINT  sshkey.private
+
+bandit13@bandit:~$ ls -la
+total 28
+drwxr-xr-x   2 root     root     4096 Jun 24 14:58 .
+drwxr-xr-x 150 root     root     4096 Jun 24 15:02 ..
+-rw-r--r--   1 root     root      220 Feb 13 12:16 .bash_logout
+-rw-r--r--   1 root     root     3851 Jun 24 14:50 .bashrc
+-rw-r--r--   1 root     root      807 Feb 13 12:16 .profile
+-rw-r-----   1 bandit14 bandit13  467 Jun 24 14:58 HINT
+-rw-r-----   1 bandit14 bandit13 2602 Jun 24 14:58 sshkey.private
+```
+
+Fíjate en `sshkey.private`: dueño `bandit14`, **grupo `bandit13`**, permisos `640`. Por eso
+yo puedo leerlo (por el grupo) aunque no sea el dueño. Ese `640` va a importar en un minuto.
+
+**Solución — traer la clave a mi máquina con `scp`:**
+
+```bash
+mlizz@GAMINGARI:~$ scp -P 2220 \
+    bandit13@bandit.labs.overthewire.org:/home/bandit13/sshkey.private \
+    ~/.ssh/bandit14.key
+bandit13@bandit.labs.overthewire.org's password:
+sshkey.private                                    100% 2602     6.9KB/s   00:00
+```
+
+**Intento fallido — la clave con permisos flojos:**
+
+```bash
+mlizz@GAMINGARI:~$ ls -l ~/.ssh/bandit14.key
+-rw-r----- 1 mlizz mlizz 2602 Aug 13 14:26 /home/mlizz/.ssh/bandit14.key
+
+mlizz@GAMINGARI:~$ ssh -i ~/.ssh/bandit14.key bandit14@bandit.labs.overthewire.org -p 2220
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Permissions 0640 for '/home/mlizz/.ssh/bandit14.key' are too open.
+It is required that your private key files are NOT accessible by others.
+This private key will be ignored.
+Load key "/home/mlizz/.ssh/bandit14.key": bad permissions
+bandit14@bandit.labs.overthewire.org's password:
+```
+
+`scp` copió el archivo **con los permisos del original** (`640`), y ssh se niega a usar una
+clave privada que el grupo pueda leer. La frase clave es `This private key will be ignored`:
+no falló la conexión, ssh **descartó la clave** y cayó de vuelta a pedir contraseña.
+
+**El arreglo:**
+
+```bash
+mlizz@GAMINGARI:~$ chmod 600 ~/.ssh/bandit14.key
+mlizz@GAMINGARI:~$ ssh -i ~/.ssh/bandit14.key bandit14@bandit.labs.overthewire.org -p 2220
+
+bandit14@bandit:~$ cat /etc/bandit_pass/bandit14
+<contraseña>
+```
+
+**Alternativa sin salir del servidor.** No hacía falta bajar la clave: se puede copiar a un
+directorio propio, ajustarle permisos y saltar a `localhost`.
+
+```bash
+bandit13@bandit:~$ TMP=$(mktemp -d)
+bandit13@bandit:~$ cp sshkey.private "$TMP/key" && chmod 600 "$TMP/key"
+bandit13@bandit:~$ ssh -i "$TMP/key" bandit14@localhost -p 2220
+```
+
+Funciona porque el servidor de Bandit se escucha a sí mismo. La ruta con `scp` es más larga
+pero enseña más — y es la que vas a usar de verdad cuando la clave la necesites en tu
+máquina.
+
+**Errores importantes.**
+Di por hecho que copiar la clave bastaba. `scp` conserva el modo del archivo de origen, así
+que heredé el `640` del servidor sin darme cuenta. El mensaje de ssh es explícito pero es
+fácil leerlo por encima y pensar que el problema era la clave, no sus permisos.
+
+**Qué aprendí.**
+
+Una clave privada es un archivo que **sustituye a la contraseña**. Si alguien más puede
+leerla, puede autenticarse como tú — por eso ssh se pone estricto y directamente la ignora
+en vez de solo advertir.
+
+- **`600` o `400`.** Nada de permisos para grupo ni para otros. `600` = dueño lee y escribe;
+  `400` = dueño solo lee. Los dos sirven.
+- **La clave privada nunca viaja.** No se envía al servidor. Se usa para **firmar un reto**
+  que el servidor verifica con la pública que ya tiene guardada. Esa es la razón de fondo de
+  toda la paranoia con los permisos.
+- **`ssh -i` = *identity file*.** Le dice a ssh qué clave privada usar. Sin `-i`, ssh solo
+  prueba los nombres por defecto (`~/.ssh/id_rsa`, `id_ecdsa`, `id_ed25519`…), y
+  `bandit14.key` no está en esa lista, así que nunca la probaría sola.
+
+**Sobre `scp`.** La estructura es siempre `scp ORIGEN DESTINO`, y el lado remoto se marca
+con `usuario@servidor:ruta`:
+
+```bash
+# servidor → mi máquina  (bajar)
+scp -P 2220 bandit13@bandit.labs.overthewire.org:/home/bandit13/sshkey.private ~/.ssh/bandit14.key
+
+# mi máquina → servidor  (subir: solo se invierte el orden)
+scp -P 2220 archivo.txt bandit13@bandit.labs.overthewire.org:/home/bandit13/
+```
+
+Detalle que muerde: en `scp` el puerto es **`-P` mayúscula**; en `ssh` es `-p` minúscula. En
+`scp`, la `-p` minúscula significa "preserva timestamps y permisos", que es otra cosa.
+
+---
+
+## Nivel 14 → 15
+
+**Objetivo.** La contraseña del siguiente nivel se obtiene **enviando la contraseña del nivel
+actual al puerto 30000 de `localhost`**.
+
+Primero, la contraseña actual — ya siendo `bandit14` sí puedo leer el archivo del nivel:
+
+```bash
+bandit14@bandit:~$ cat /etc/bandit_pass/bandit14
+<contraseña de bandit14>
+```
+
+**Solución:**
+
+```bash
+bandit14@bandit:~$ nc localhost 30000
+<contraseña de bandit14>          ← la escribo y doy Enter
+Correct!
+<contraseña de bandit15>
+```
+
+**Versión sin copiar y pegar** — más segura, porque el archivo se lee solo:
+
+```bash
+bandit14@bandit:~$ cat /etc/bandit_pass/bandit14 | nc localhost 30000
+Correct!
+<contraseña de bandit15>
+```
+
+Y si la contraseña es incorrecta el servicio lo dice:
+
+```bash
+Wrong! Please enter the correct current password.
+```
+
+**Qué aprendí.**
+
+`nc` (*netcat*) abre una conexión TCP o UDP cruda a un host y puerto:
+
+```bash
+nc HOST PUERTO
+```
+
+Una vez conectada, **lo que escribas se envía al programa que está escuchando ahí**, y lo
+que ese programa responda aparece en tu terminal. Es el equivalente de red de `cat`: mueve
+bytes de un lado a otro sin interpretar nada.
+
+Por eso funciona el pipe: `cat archivo | nc localhost 30000` manda el contenido del archivo
+como si lo hubiera tecleado.
+
+Esto conecta directo con `ss` del lado contrario:
+
+```text
+ss -tlnp   →  ¿QUIÉN está escuchando en este puerto?   (lado del servidor)
+nc host p  →  CONÉCTAME a ese puerto                    (lado del cliente)
+```
+
+- `localhost` (o `127.0.0.1`) significa "esta misma máquina". El tráfico no sale a la red.
+- El puerto 30000 no es especial: es solo donde el reto decidió poner el servicio.
+- Un puerto abierto es una **interfaz**. Hablar con un servicio local por TCP es la misma
+  mecánica con la que después hablas con Postgres (5432) o con una API (8080).
+
+---
+
+## Temas de investigación — niveles 13 a 15
+
+Resumen de lo que hubo que investigar en estos niveles, separado por tema.
+
+### 1. Autenticación SSH por clave
+
+Los niveles anteriores eran sobre **encontrar** archivos. Estos son los primeros sobre
+**identidad**: quién eres determina qué puedes leer.
+
+```text
+              dos formas de probar quién eres
+                          │
+          ┌───────────────┴───────────────┐
+          ↓                               ↓
+     contraseña                     clave privada
+   (algo que sabes)              (algo que tienes)
+          │                               │
+   se envía y se                 nunca se envía: firma
+   compara en el                 un reto que el servidor
+      servidor                   verifica con la pública
+```
+
+Las piezas:
+
+| | |
+| --- | --- |
+| Clave **privada** | El archivo secreto. Vive solo en tu máquina. Permisos `600` o `400` |
+| Clave **pública** | La mitad que se le da al servidor (`~/.ssh/authorized_keys`) |
+| `ssh -i RUTA` | *identity file* — qué clave privada usar |
+| `~/.ssh/known_hosts` | Huellas de servidores ya visitados (la pregunta del nivel 0) |
+
+### 2. Permisos, otra vez — pero ahora como requisito, no como obstáculo
+
+Los permisos ya aparecieron en los niveles 4, 5 y 6, pero como **pistas para filtrar**
+(`-perm`, `-user`). Aquí cambian de papel: son una **condición que el programa exige**.
+
+```text
+-r--------   solo el dueño lee          ← /etc/bandit_pass/bandit14
+-rw-r-----   dueño rw, grupo lee (640)  ← sshkey.private: legible por bandit13
+-rw-------   solo el dueño rw (600)     ← lo que ssh exige de una clave privada
+```
+
+La lección general: **`chmod` no es solo para dar acceso, también para quitarlo**, y a veces
+quitar acceso es lo que desbloquea la herramienta.
+
+### 3. Mover archivos entre máquinas
+
+```text
+scp ORIGEN DESTINO
+        │       │
+        └───────┴── el lado remoto se escribe usuario@servidor:/ruta
+
+scp -P 2220 user@host:/ruta/remota  ~/local     bajar
+scp -P 2220 ~/local  user@host:/ruta/remota     subir  (mismo comando, invertido)
+```
+
+Dos trampas confirmadas: `-P` mayúscula para el puerto (al revés que `ssh`), y `scp`
+**conserva los permisos del origen** — que es exactamente lo que rompió el nivel 13.
+
+### 4. Puertos y servicios locales
+
+Primera vez que el reto no es sobre archivos sino sobre **procesos que escuchan**.
+
+```text
+nc localhost 30000     hablar con un servicio local
+ss -tlnp | grep 30000  ver quién lo está sirviendo
+```
+
+### 5. `~/.ssh/config` — dejar de repetir la línea larga
+
+Esto no lo pide el reto, pero es la consecuencia natural de haber escrito tres veces
+`ssh -i ~/.ssh/bandit14.key bandit14@bandit.labs.overthewire.org -p 2220`.
+
+```sshconfig
+Host bandit14
+    HostName bandit.labs.overthewire.org
+    User bandit14
+    Port 2220
+    IdentityFile ~/.ssh/bandit14.key
+    IdentitiesOnly yes
+```
+
+Con eso, todo lo anterior se vuelve:
+
+```bash
+ssh bandit14
+```
+
+Cómo funciona: ssh lee `~/.ssh/config`, busca los bloques cuyo patrón `Host` coincida con lo
+que escribiste, arma la configuración efectiva y se conecta.
+
+```text
+ssh bandit14
+      │
+      ├── HostName     → a dónde se conecta de verdad
+      ├── User         → como quién se identifica
+      ├── Port         → 2220
+      └── IdentityFile → qué clave ofrece
+```
+
+**El alias no viaja a ningún lado.** `bandit14` es solo una etiqueta local para que ssh sepa
+qué valores usar; el servidor nunca se entera de que existe. Por eso `Host` puede ser
+cualquier cosa mientras `HostName` sea real.
+
+Detalles que muerden:
+
+- **Ruta absoluta o con `~`.** Una ruta relativa se resuelve contra tu directorio actual, no
+  contra `~/.ssh`, así que `ssh bandit14` funcionaría desde una carpeta y desde otra no.
+- **`IdentityFile` no es exclusivo por defecto.** Si lo pones, ssh prueba esa clave **y
+  además** las de siempre. `IdentitiesOnly yes` lo limita a la tuya.
+- **Se puede repetir.** Varios `IdentityFile` en un bloque = "prueba estas, en este orden".
+- **El límite de 6 intentos.** El servidor corta a las `MaxAuthTries` (6 por defecto). Cada
+  clave que ssh ofrece cuenta como un intento, así que con siete claves en `~/.ssh` te
+  pueden rechazar **aun teniendo la correcta**. `IdentitiesOnly yes` es la línea que evita
+  ese problema cuando acumules varias.
+- **Permisos del config:** `600`, igual que las claves.
+
+Las claves que ssh prueba solo si no le dices otra cosa: `id_rsa`, `id_ecdsa`, `id_ecdsa_sk`,
+`id_ed25519`, `id_ed25519_sk`, `id_xmss`, `id_dsa`. Ninguna se llama `bandit14.key` — de ahí
+la necesidad de `-i` o de `IdentityFile`.
+
+---
+
 ## Pendientes
 
-
-- [ ] Niveles 13 → 14
+- [ ] Niveles 15 → 16
