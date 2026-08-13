@@ -33,8 +33,10 @@
 - [X] `?` 2026-08-07 — repasar notación numérica de chmod: 600 vs 644 vs 700. Los confundí en la recuperación
     → RESUELTA 08-10: pruebas y ejercicios en bash notes enlaces
 
-- [ ] `!` 2026-08-07 — asimetría de permisos: archivo `.md` ilegible mata el script, subdirectorio ilegible no. 
-        ¿Cómo se detecta el     fracaso de un comando al otro lado de `< <(...)`?
+- [X] `!` 2026-08-07 — asimetría de permisos: archivo `.md` ilegible mata el script, subdirectorio ilegible no. 
+        ¿Cómo se detecta el fracaso de un comando al otro lado de `< <(...)`?
+        → RESUELTA 08-12: un process substitution genera otra shell, por lo que sus exit status no se propagan hacia la shell principal
+        
 - [ ] `?` 2026-08-07 — `nullglob`: probar el glob sin coincidencias antes de meterlo a contar-lineas.sh. `help shopt`
 - [ ] `?` 2026-08-07 — decidir si "no diste directorio" y "el directorio no existe" comparten mensaje.
          Hoy comparten y el mensaje miente un poco
@@ -47,3 +49,6 @@
 - [ ] `?` 2026-08-11 — `ln -sfT` vs `-sfn`: en qué se diferencian. man ln
 - [ ] `~` 2026-08-11 — entornos virtuales de Python: por qué existen y qué se le dice a VS Code. SEPTIEMBRE, con dos venv reales y versiones distintas de pandas
 - [ ] `~` 2026-08-11 — dev containers y Remote SSH de VS Code. Cuando llegue Docker
+
+- [ ] `~` 2026-08-12 —systemd y journalctl (cuando haya un servicio), arrays asociativos (cuando el logger necesite filtrar), 
+      lsof +L1  (ya lo entiendes conceptualmente; lo reproduces cuando un disco se llene de verdad).

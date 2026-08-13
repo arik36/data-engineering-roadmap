@@ -6,7 +6,7 @@ enlazar() {
     local track="$DOTFILES_DIR/$1"
     local link="$2"
 
-    if [ ! -e "$track" ]; then
+    if [ ! -f "$track" ]; then
         echo "ERROR: no existe el origen $track" >&2
         return 1
     fi
