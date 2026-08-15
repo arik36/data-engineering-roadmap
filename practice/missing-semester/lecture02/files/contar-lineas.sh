@@ -31,10 +31,18 @@ if [ -d "$directorio" ]; then
     contador=0
     log INFO "iniciamos el conteo de líneas en archivos .md en el directorio $directorio"
 
-    while read -r archivo; do
+    salida=$(find "$directorio" -type f -name "*.md") \
+    || { log ERROR "no se pudo leer $directorio"; exit 2; }
+    if [ -z "$salida" ]; then
+        log INFO "no se encontraron archivos .md en $directorio"
+        exit 0
+    fi
+    mapfile -t archivos <<< "$salida"   
+
+    for archivo in "${archivos[@]}"; do
         lineas=$(wc -l < "$archivo")
         contador=$((contador + lineas))
-    done < <(find "$directorio" -type f -name "*.md")
+    done
 
     echo "$contador"
     log INFO "conteo terminado: $contador líneas en $directorio"

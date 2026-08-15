@@ -25,3 +25,24 @@ Una subshell es fork sin exec: copia de bash con todo tu estado. Un comando o sc
 set -e no cruza a un script hijo. Cada script necesita su propio set -euo pipefail — no se hereda del shell que lo lanzó.
 
 Las variables modificadas dentro de un pipe se pierden: el bucle corre en una subshell y muere con ella. find | while deja el contador en 0; while < <(find) lo conserva.
+
+--14-08-26
+El estado de salida de un subproceso siempre existe; lo que cambia es si bash lo conecta con algo. < <(...) no lo conecta. Materializar la salida con salida=$(find ...) sí, porque una asignación simple propaga el estado.
+
+<<< sobre una cadena vacía produce una línea vacía, no cero. ${#array[@]} da 1. Validar la cadena antes de convertirla evita el caso.
+
+Validar el proceso no valida el dato: son dos capas. Un pipeline nunca debe reportar éxito con resultado vacío sin haberlo comprobado.
+
+Cada salida exitosa debe honrar el mismo contrato de stdout. Bash trata la cadena vacía como cero en aritmética, así que un echo faltante no da error: da un resultado plausible.
+
+source sí hereda set -e porque no crea proceso; bash script.sh no, porque es fork+exec. Cada script necesita el suyo.
+
+export copia hacia abajo, nunca hacia arriba. Nada que haga un hijo con su copia toca la del padre — es propiedad de fork, no limitación de bash.
+
+El estado de salida de un subproceso siempre existe; lo que cambia es si bash lo conecta con algo. < <(...) no lo conecta; un pipe sí, vía PIPESTATUS; una asignación simple también.
+
+<<< sobre cadena vacía produce una línea vacía, no cero. ${#array[@]} da 1 y el for entra una vez con "". Validar la cadena antes de convertirla lo esquiva.
+
+Validar el proceso no valida el dato: son dos capas.
+
+En "Modelo mental", una línea que sí vale de todo lo de sustitución: $(...) = quiero su resultado; <(...) = quiero una fuente de datos. Esa distinción explica por qué uno propaga el estado y el otro no.

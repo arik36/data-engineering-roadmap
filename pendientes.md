@@ -57,3 +57,5 @@
 - [ ] `?` 2026-08-13 — `IdentitiesOnly yes`: probarlo cuando tenga más de una clave
 - [ ] `~` 2026-08-13 — `$$` vs `$BASHPID` en subshells. Aplica cuando depure procesos
 - [ ] `?` 2026-08-13 — `Host local` no tiene User: confirmar si es intencional
+
+-[]`!` 2026-08-14 — wait $! sobre sustitución de proceso, el camino B que quedó sin probar. Y el mensaje ambiguo de contar-lineas.sh sin argumento, que sigue abierto desde el 08-07.
