@@ -19,6 +19,10 @@
 
 #!/usr/bin/env bash
 set -euo pipefail
+set -x
+PS4='TRACE: '
+
+trap 'echo "falló en línea $LINENO: $BASH_COMMAND" >&2' ERR
 
 log() {
     local nivel="$1"; shift
@@ -27,12 +31,18 @@ log() {
 
 directorio="${1:-}"
 
+if [ -z "$directorio" ]; then
+    log ERROR "uso: $0 <directorio>"
+    exit 1
+fi
+
 if [ -d "$directorio" ]; then
     contador=0
     log INFO "iniciamos el conteo de líneas en archivos .md en el directorio $directorio"
 
     salida=$(find "$directorio" -type f -name "*.md") \
     || { log ERROR "no se pudo leer $directorio"; exit 2; }
+
     if [ -z "$salida" ]; then
         log INFO "no se encontraron archivos .md en $directorio"
         exit 0
@@ -49,6 +59,6 @@ if [ -d "$directorio" ]; then
 else
     #echo "Error: el directorio no existe" >&2
     log ERROR "el directorio $directorio no existe"
-    exit 1
+    false
 fi
 

@@ -20,3 +20,11 @@ Una línea por sesión: fecha · qué hice · qué quedó pendiente.
 - 2026-08-13 · IdentityFile + clave de Bandit 13 (rechazada en 640, aceptada en 600); precedencia de ssh_config verificada: gana el primero, no el más específico; logger de 4 líneas en contar-lineas.sh con stdout/stderr separados — stdout devuelve solo el número · subshell vs fork+exec: el contador se pierde con pipe, sobrevive con < <() — ese es el intercambio que hay que resolver mañana
 
 - 2026-08-14 · Arreglado el fallo silencioso de < <(...) en contar-lineas.sh: materializar find con sustitución de comandos (camino A) + validar la cadena antes de mapfile (camino C). Descubierto de paso: <<< "" da un elemento vacío, y el exit 0 temprano rompía el contrato de stdout. Bloque de gestor de paquetes (apt vs dpkg, remove/purge/autoremove, --dry-run) · sin hacer: Bandit 14
+
+- 2026-08-15 · Prueba de logro semana 2: 2 de 4 limpios. El punto 1 salió inválido
+  (planté el bug en el for y corrí sin argumento, nunca se ejecutó). Punto 4 fallado
+  de memoria — zombi, nohup y SIGKILL los tenía invertidos; corregido ejecutando
+  kill -STOP/-CONT/-9 y creando un zombi real con fork sin wait. Hallazgo propio:
+  exit 1 no dispara trap ERR, y PS4 repite su primer caracter por nivel de anidamiento.
+  Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! sobre
+  sustitución de proceso) + 2 con fecha futura. Aplicadas N vacantes.
