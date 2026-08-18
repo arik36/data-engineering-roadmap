@@ -143,5 +143,5 @@ conecta stdout al archivo, y hasta entonces ejecuta `cat`.
 ## Pendientes
 
 - [ ] `tee`: escribir a un archivo y a stdout a la vez
-- [ ] Probar `2>&1` con un comando que falle, y ver por qué el orden importa
+- [X] Probar `2>&1` con un comando que falle, y ver por qué el orden importa
       (`cmd > f 2>&1` vs `cmd 2>&1 > f`)

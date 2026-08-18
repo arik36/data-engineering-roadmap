@@ -8,9 +8,31 @@ Consolida lo que estaba repartido en `enlaces-simbolicos.md` y en `entorno.md` �
 Un **inodo** es donde el sistema de archivos guarda todo lo de un archivo *menos su nombre*:
 permisos, dueño, tamaño, fechas y dónde están los bloques de datos.
 
-El nombre vive en el **directorio**, que es una tabla de `nombre → número de inodo`. Un
-directorio no "contiene" archivos: contiene punteros.
+El nombre no vive en el inodo. Vive en el **directorio**, que es una tabla de
+`nombre → número de inodo`. Un directorio no "contiene" archivos: contiene punteros.
 
+```bash
+$ ls -i archivo.txt
+573494 archivo.txt
+
+$ stat -c 'inodo=%i enlaces=%h tamaño=%s' archivo.txt
+inodo=573494 enlaces=1 tamaño=10
+```
+
+Esa separación explica cosas que si no parecen arbitrarias:
+
+```bash
+$ mv a.txt b.txt      # inodo 573494 → 573494   solo cambió la entrada del directorio
+$ cp b.txt c.txt      # inodo 573494 → 573495   archivo nuevo, datos duplicados
+```
+
+`mv` dentro del mismo sistema de archivos es instantáneo aunque el archivo pese 4 GB: no mueve
+datos, reescribe una línea de la tabla. `cp` sí copia bloques.
+
+El campo `enlaces` cuenta cuántos nombres apuntan al inodo. **Borrar un archivo no borra
+datos:** quita un nombre y baja el contador. Los datos se liberan cuando llega a cero.
+
+---
 De ahí salen las dos formas de enlace:
 
 | | Enlace duro (`ln`) | Simbólico (`ln -s`) |

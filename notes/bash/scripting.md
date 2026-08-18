@@ -158,5 +158,5 @@ inconsistente. Un instalador debería hacer todo o nada.
 
 ## Pendientes
 
-- [ ] `set -euo pipefail` — viernes de esta semana
+- [X] `set -euo pipefail` — viernes de esta semana
 - [ ] La variante portable de BashFAQ/028 con bucle, para cuando importe macOS

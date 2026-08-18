@@ -94,3 +94,8 @@
 - [ ] `!` tarea 2026-08-15 — auditoría de notes/bash/: borrar enlaces-simbolicos.md,
       corregir .aws en entorno.md, quitar §7-8, marcar 4 pendientes muertos,
       escribir procesos.md y errores.md, archivar los dos transcripts, partir ssh.md
+      ACTUALIZACIÓN 08-17: Falta: escribir procesos.md y errores.md desde bash-set-euo-pipefail.md, archivar los dos transcripts, partir ssh.md sacando permisos.md, quitar el duplicado de 2>/dev/null y el de | tail
+
+- [ ] `!` 2026-08-17 — `wait $!` sobre sustitución de proceso: $! SÍ queda con el PID (verificado). Es el camino B del intercambio del (...).     Probar si el estado que devuelve es el de find, y anotar la versión de bash
+- [ ] `?` 2026-08-17 — ejercicio 3 de L5: borrar un archivo del historial con git filter-repo. Miércoles, junto con bisect
+- [ ] tarea 2026-08-17 — PR al repo del curso (ejercicio 7). Sábado, junto con las vacantes. Un PR aceptado es pieza de portafolio
