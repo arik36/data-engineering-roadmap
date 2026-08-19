@@ -44,4 +44,5 @@ enlazar() {
 enlazar bashrc "$HOME/.bashrc"
 enlazar bash_aliases "$HOME/.bash_aliases"
 enlazar ssh/config "$HOME/.ssh/config"
+enlazar gitconfig "$HOME/.gitconfig"
 

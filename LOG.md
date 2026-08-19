@@ -25,3 +25,10 @@ Una línea por sesión: fecha · qué hice · qué quedó pendiente.
 Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! sobre sustitución de proceso) + 2 con fecha futura. Aplicadas N vacantes.
 
 - 2026-08-17 · fork vs exec desarmado: son dos ejes independientes, no una dicotomía — la construcción decide si hay fork, el contenido decide si hay exec, y la propagación del estado es un tercer asunto. Verificado que exec conserva el PID (mismo proceso, otro programa) y que <(...) produce un nombre de archivo (/dev/fd/63), no datos. L5 ejercicios 2, 4, 5 y 6: git log --graph, blame + show, stash, alias `git graph` y gitignore_global — los dos últimos entraron a dotfiles e install.sh · pendiente: notes/bash/git.md → mañana con los datos de los ejercicios enfrente
+
+- 2026-08-18 · Ejercicio 7 de L5: conflicto de merge resuelto a mano (recipe.txt,
+  salty y sweet) — el primer merge entra limpio, el conflicto le toca al segundo.
+  Probado git merge --abort. Mismo escenario con rebase: los SHA cambian porque el
+  commit incluye a su padre; git reflog conserva los viejos. Recuperación: git add
+  produce el blob y el SHA se deriva de su contenido — cerrada, la había fallado
+  el 08-08 · sin hacer: notes/git.md → miércoles

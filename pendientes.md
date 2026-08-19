@@ -99,3 +99,6 @@
 - [ ] `!` 2026-08-17 — `wait $!` sobre sustitución de proceso: $! SÍ queda con el PID (verificado). Es el camino B del intercambio del (...).     Probar si el estado que devuelve es el de find, y anotar la versión de bash
 - [ ] `?` 2026-08-17 — ejercicio 3 de L5: borrar un archivo del historial con git filter-repo. Miércoles, junto con bisect
 - [ ] tarea 2026-08-17 — PR al repo del curso (ejercicio 7). Sábado, junto con las vacantes. Un PR aceptado es pieza de portafolio
+
+- [ ] tarea 2026-08-18 — notes/git.md: merge vs rebase en términos del grafo. Va en la versión de una página, no en la de 881 líneas
+- [ ] tarea 2026-08-18 — gitconfig como cuarto dotfile en install.sh (1 min). Ya existe el archivo con el alias git graph

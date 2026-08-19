@@ -1,0 +1,9 @@
+[user]
+	name = arik36
+	email = beckerastoria@gmail.com
+[credential]
+	helper = store
+[alias]
+	graph = log --all --graph --decorate --oneline
+[core]
+	excludesfile = /home/mlizz/.gitignore_global
