@@ -100,5 +100,11 @@
 - [ ] `?` 2026-08-17 — ejercicio 3 de L5: borrar un archivo del historial con git filter-repo. Miércoles, junto con bisect
 - [ ] tarea 2026-08-17 — PR al repo del curso (ejercicio 7). Sábado, junto con las vacantes. Un PR aceptado es pieza de portafolio
 
-- [ ] tarea 2026-08-18 — notes/git.md: merge vs rebase en términos del grafo. Va en la versión de una página, no en la de 881 líneas
-- [ ] tarea 2026-08-18 — gitconfig como cuarto dotfile en install.sh (1 min). Ya existe el archivo con el alias git graph
+- [X] tarea 2026-08-18 — notes/git.md: merge vs rebase en términos del grafo. Va en la versión de una página, no en la de 881 líneas
+- [X] tarea 2026-08-18 — gitconfig como cuarto dotfile en install.sh (1 min). Ya existe el archivo con el alias git graph
+
+- [ ] tarea 2026-08-20 — pasar bisect2.pdf a practice/missing-semester/lecture05/solved.md con bloques de texto, no capturas
+- [ ] tarea 2026-08-20 — partir notes/git.md → notes/git/ con basico.md, merge-y-rebase.md y arqueologia.md
+- [ ] tarea 2026-08-20 — corregir el hash del segundo diagrama de merge (no puede ser 82qaskd en los dos casos)
+
+- [ ] `~` 2026-08-20 — bisect run cuando la prueba vive en el repo: ¿cómo se garantiza que no cambió en el rango? Aplica cuando tenga un proyecto con tests

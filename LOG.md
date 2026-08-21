@@ -32,3 +32,13 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   commit incluye a su padre; git reflog conserva los viejos. Recuperación: git add
   produce el blob y el SHA se deriva de su contenido — cerrada, la había fallado
   el 08-08 · sin hacer: notes/git.md → miércoles
+
+  - 2026-08-20 · notes/git.md escrita: merge y rebase con grafos antes/después,
+  los dos casos según dónde estás parada, el caso invertido, y evidencia de mi
+  terminal (1bd92ce→af6d933 vs c004e19+8a1e6ea→a7aab0c). Corrección: el orden de
+  los padres es parte del hash — mergear A→B y B→A da el mismo árbol y commits
+  distintos. git bisect manual: 10 commits en 3 pasos; y bisect run automático
+  con prueba.sh fuera del repo · el PDF de 102 páginas de L5 no va al repo:
+  su destilado es solved.md
+
+  
