@@ -46,3 +46,21 @@ El estado de salida de un subproceso siempre existe; lo que cambia es si bash lo
 Validar el proceso no valida el dato: son dos capas.
 
 En "Modelo mental", una línea que sí vale de todo lo de sustitución: $(...) = quiero su resultado; <(...) = quiero una fuente de datos. Esa distinción explica por qué uno propaga el estado y el otro no.
+
+
+-21/08/2026
+Un código de salida por modo de falla, no uno genérico. La distinción es qué debe hacer quien llama: 1 (uso) nunca se reintenta, 3 (permisos) quizá sí.
+
+--help va a stdout con exit 0: no es un error, es lo que se pidió. Y antes de cualquier validación, o muere sin argumentos.
+
+
+Si escribes literalmente exit 1 en tu script, un trap '...' ERR no lo va a atrapar.
+
+Aquí te explico la diferencia exacta de por qué pasa esto:
+
+-El motivo técnico
+Cuando usas false (o un comando que falla): El comando se ejecuta, termina, y le dice a Bash "terminé, pero fallé". Bash recibe el golpe, sigue vivo, revisa sus reglas y dice: "¡Tengo que ejecutar el trap ERR!".
+
+Cuando usas exit 1: No es un comando que "falla", es una orden directa de terminación. Le estás diciendo a Bash: "Mata este script en este preciso instante y devuélvele un 1 al sistema operativo". Como el proceso de Bash inicia inmediatamente su secuencia de autodestrucción, no se detiene a evaluar la trampa ERR.
+
+

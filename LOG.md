@@ -41,4 +41,9 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   con prueba.sh fuera del repo · el PDF de 102 páginas de L5 no va al repo:
   su destilado es solved.md
 
-  
+  - 2026-08-20 · L6 leída (mapa; el bloque de Python y contenedores va a pendientes con
+  fecha). contar-lineas.sh empaquetado: --help a stdout con exit 0, cuatro códigos de
+  salida distintos (0/1/2/3), README en scripts/, shellcheck limpio. Movido de
+  practice/ a scripts/ con git mv — el LOG del 08-07 ya lo ubicaba ahí. Prueba de
+  aceptación de cuatro casos verificada · vocabulario cerrado: artefacto, dependencia,
+  distribución fuente, content-addressed = lo mismo que git

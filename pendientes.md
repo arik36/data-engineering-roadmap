@@ -108,3 +108,12 @@
 - [ ] tarea 2026-08-20 — corregir el hash del segundo diagrama de merge (no puede ser 82qaskd en los dos casos)
 
 - [ ] `~` 2026-08-20 — bisect run cuando la prueba vive en el repo: ¿cómo se garantiza que no cambió en el rango? Aplica cuando tenga un proyecto con tests
+
+- [ ] `~` 2026-08-20 — L6, bloque Python: import, venv, pyproject.toml, uv lock,
+      wheels, typer. SEPTIEMBRE, con Python instalado
+- [ ] `~` 2026-08-20 — L6, bloque contenedores: Docker, containerd, docker-compose,
+      YAML, microservicios. Cuando llegue Docker
+- [ ] `~` 2026-08-20 — CI/CD y pipelines de integración continua. Cuando haya un
+      proyecto con pruebas
+
+- [ ] `~` 2026-08-20 — el equivalente del README/--help en Python es el wheel con sus metadatos. Ver al empaquetar algo real

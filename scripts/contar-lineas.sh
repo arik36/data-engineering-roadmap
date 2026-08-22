@@ -19,15 +19,29 @@
 
 #!/usr/bin/env bash
 set -euo pipefail
-set -x
-PS4='TRACE: '
-
-trap 'echo "falló en línea $LINENO: $BASH_COMMAND" >&2' ERR
 
 log() {
     local nivel="$1"; shift
     printf '%s [%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$nivel" "$*" >&2
 }
+
+if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
+cat <<EOF 
+Uso: $0 <directorio>
+
+Cuenta el número total de líneas de todos los archivos .md dentro de un directorio.
+
+Salida (stdout):
+Devuelve únicamente un número entero que representa el total de líneas contadas.
+
+Códigos de salida:
+0 - Éxito
+1 - Error de uso (falta el directorio)
+2 - El directorio especificado no existe
+3 - Error al intentar leer el directorio
+EOF
+exit 0
+fi
 
 directorio="${1:-}"
 
@@ -41,10 +55,12 @@ if [ -d "$directorio" ]; then
     log INFO "iniciamos el conteo de líneas en archivos .md en el directorio $directorio"
 
     salida=$(find "$directorio" -type f -name "*.md") \
-    || { log ERROR "no se pudo leer $directorio"; exit 2; }
+    || { log ERROR "no se pudo leer $directorio"; exit 3; }
 
     if [ -z "$salida" ]; then
         log INFO "no se encontraron archivos .md en $directorio"
+        #aun si no hay archivos, el conteo se regresa como 0, no es un error
+        echo "0" 
         exit 0
     fi
     mapfile -t archivos <<< "$salida"   
@@ -59,6 +75,6 @@ if [ -d "$directorio" ]; then
 else
     #echo "Error: el directorio no existe" >&2
     log ERROR "el directorio $directorio no existe"
-    false
+    exit 2
 fi
 
