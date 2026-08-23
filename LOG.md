@@ -47,3 +47,10 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   practice/ a scripts/ con git mv — el LOG del 08-07 ya lo ubicaba ahí. Prueba de
   aceptación de cuatro casos verificada · vocabulario cerrado: artefacto, dependencia,
   distribución fuente, content-addressed = lo mismo que git
+
+  - 2026-08-21 · git diff vs diff --staged y los dos restore, con predicción: un archivo
+  vive en tres lugares (commit, índice, disco) y status reporta dos comparaciones
+  distintas. git restore sin --staged destruye trabajo del disco sin red de seguridad —
+  reflog solo guarda movimientos de HEAD. notes/git/tres-estados.md escrita ·
+  set -e no dispara cuando el estado ya se evalúa (if, while, &&, ||, !); exit 0 es la
+  única convención universal, grep y diff usan 1 sin que sea fallo

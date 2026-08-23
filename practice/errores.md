@@ -63,4 +63,7 @@ Cuando usas false (o un comando que falla): El comando se ejecuta, termina, y le
 
 Cuando usas exit 1: No es un comando que "falla", es una orden directa de terminación. Le estás diciendo a Bash: "Mata este script en este preciso instante y devuélvele un 1 al sistema operativo". Como el proceso de Bash inicia inmediatamente su secuencia de autodestrucción, no se detiene a evaluar la trampa ERR.
 
+La convención es "0 = éxito", pero el significado de los demás lo define cada programa. Justo por eso los documentas.
+
+Si ejecutas git diff sin ningún argumento, por defecto evalúa la diferencia entre tu directorio de trabajo (working directory) y el área de preparación (staging area o index).
 

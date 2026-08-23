@@ -652,6 +652,12 @@ Si hubiera escrito `wc -l "$archivo"` (con argumento), la variable `lineas` vald
 
 ---
 ---
+# 4.5 Un exit status diferente de 0 no termina un script, set -e si lo hace...
+La convención completa es: 0 = éxito, 1 = ausencia o negativa, 2+ = error real. Muchas herramientas la siguen, pero no es obligatoria — por eso man tiene sección "EXIT STATUS" y por eso tu --help lleva la tabla.
+
+Una trampa que sale de ahí y que sí te va a morder: bajo set -e, un grep que no encuentra nada mata tu script. Es el caso más común de "mi script murió y no sé por qué". El arreglo es grep ... || true cuando no encontrar es un resultado aceptable.
+
+Exit 0 es la única convención universal. El resto lo define cada programa: grep sale con 1 cuando no encuentra, diff cuando hay diferencias — no son fallos. Bajo set -e, un grep sin coincidencias mata el script; || true si no encontrar es aceptable.
 
 # 5. `set -e` no dispara dentro de un `if`
 
