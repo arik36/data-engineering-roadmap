@@ -48,9 +48,11 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   aceptación de cuatro casos verificada · vocabulario cerrado: artefacto, dependencia,
   distribución fuente, content-addressed = lo mismo que git
 
-  - 2026-08-21 · git diff vs diff --staged y los dos restore, con predicción: un archivo
-  vive en tres lugares (commit, índice, disco) y status reporta dos comparaciones
-  distintas. git restore sin --staged destruye trabajo del disco sin red de seguridad —
-  reflog solo guarda movimientos de HEAD. notes/git/tres-estados.md escrita ·
-  set -e no dispara cuando el estado ya se evalúa (if, while, &&, ||, !); exit 0 es la
-  única convención universal, grep y diff usan 1 sin que sea fallo
+- 2026-08-21 · git diff vs diff --staged y los dos restore, con predicción: un archivo
+  vive en tres lugares (commit, índice, disco) y status reporta dos comparaciones.
+  git restore sin --staged destruye trabajo del disco sin red de seguridad.
+  notes/git-github/tresestados.md escrita · auditoría de notes/: install.sh duplicado
+  resuelto, errores.md movida a notes/bash y reorganizada por tema (4 duplicados fuera)
+  · set -e no dispara cuando el estado ya se evalúa; exit 0 es la única convención
+  universal · pendiente: capturas de lecture01, _plantilla.md que no existe, los dos
+  transcripts a archive
