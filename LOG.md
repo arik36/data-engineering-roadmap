@@ -56,3 +56,13 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   · set -e no dispara cuando el estado ya se evalúa; exit 0 es la única convención
   universal · pendiente: capturas de lecture01, _plantilla.md que no existe, los dos
   transcripts a archive
+
+- 2026-08-24 · Prueba de logro semana 3: 3.5 de 4. Conflicto de merge resuelto sin
+  apuntes en repo nuevo (menu.txt, rama mariscos) — el primer merge fue fast-forward
+  y solo el segundo conflictuó, como se predijo. Corregí un commit hecho en la rama
+  equivocada con git reset --hard HEAD~1, sin guion. merge vs rebase de memoria con
+  los dos grafos. Falló git restore — 3 días, se arregla con repetición. PR enviado
+  al repo del curso (ejercicio 6 de L5, pendiente desde el 17). N vacantes aplicadas;
+  se repiten <tecnologías>. Poda de pendientes: 49 entradas en 24 días → 17 abiertas,
+  de las cuales UNA es duda real (wait $!). De ocho marcadas !, siete eran tareas —
+  tercer mes que aparece el patrón · cierra semana 3

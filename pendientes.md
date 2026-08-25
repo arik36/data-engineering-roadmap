@@ -2,7 +2,6 @@
 
 `?` lo resuelve una herramienta · `!` va con Claude/Asesor · `~` cobertura, probablemente se descarta
 
-- [ ] `!` 2026-08-01 — documentar cómo publicar un repo local en GitHub (hubo complicaciones). Escribir al montar dotfiles en semana 1 → notes/  git/publicar-repo-en-github.md
 - [ ] `~` 2026-08-01 — README de lecture01: convertir 19 capturas a bloques de terminal. Hacer al repetir ejercicios en semana 1
 - [X] `~` 2026-08-01 — data_espacios.txt: ¿de qué ejercicio era? Renombrar o borrar
 - [ ] `?` 2026-08-01 — falta la sección de grep en notes/bash/buscar-y-filtrar.md
@@ -22,7 +21,6 @@
         ignorespace — los comandos que empiezan con espacio no se guardan
         ignoredups — no guarda repetidos consecutivos
         ignoreboth — las dos
-
 ------------------------------------------------ . . . . . -----------------------------------------------------------------
 
 - [X] `!` 2026-08-03 — ¿parto entorno.md en alias.md + entorno.md? Inodos y symlinks no son configuración de shell
@@ -45,7 +43,6 @@
 
 - [ ] `?` 2026-08-06 — arrancar ssh-agent desde el bashrc sin levantar uno nuevo por terminal
 
-- [ ] `?` 2026-08-06 — verificar que HISTCONTROL incluya ignorespace; si no, agregarlo a bash_aliases
 - [ ] `!` 2026-08-06 — sacar permisos y chmod de ssh.md a notes/bash/permisos.md (aplica a Bandit, Docker, S3)
 
 - [X] `?` 2026-08-07 — repasar notación numérica de chmod: 600 vs 644 vs 700. Los confundí en la recuperación
@@ -59,16 +56,18 @@
          → RESUELTA 08-15: cuando un glob no coincide con nada, bash deja el patrón literal. Por eso rm -rf ./* en un directorio 
            vacío intenta borrar un archivo llamado ./*
 
-           * shopt -s nullglob cambia eso: el glob sin coincidencias se expande a nada, y el bucle no itera. 
-            Es la opción correcta para scripts.
+        * shopt -s nullglob cambia eso: el glob sin coincidencias se expande a nada, y el bucle no itera. 
+        Es la opción correcta para scripts.
 
 - [X] `?` 2026-08-07 — decidir si "no diste directorio" y "el directorio no existe" comparten mensaje.
          Hoy comparten y el mensaje miente un poco
          → RESUELTA 08-15: error de contar-lineas.sh, si no se colocaba un directorio se decia que no existe 
          ahora se muestra que no hay nada 
 
-- [ ] `?` 2026-08-10 — `$0` cambia con `source`: dirname devuelve otra cosa. Correr /tmp/f.sh ejecutado vs source y comparar
-- [ ] `~` 2026-08-10 — `ln -sr` para enlaces relativos: ¿conviene sobre rutas absolutas en dotfiles?
+- [X] `?` 2026-08-10 — `$0` cambia con `source`: dirname devuelve otra cosa. Correr /tmp/f.sh ejecutado vs source y comparar
+    → RESUELTA 08-24:— documentado en scripting.md
+- [X] `~` 2026-08-10 — `ln -sr` para enlaces relativos: ¿conviene sobre rutas absolutas en dotfiles?
+    → RESUELTA 08-14:— decidimos rutas absolutas
 - [ ] `!` 2026-08-10 — install.sh: si falla un enlace, ¿abortar o seguir con los demás? Hoy sigue y sale con el estado del último. Decidir
 
 - [ ] `!` 2026-08-11 — install.sh no fija permisos. git solo versiona el bit de ejecución: al clonar, ~/.ssh/config nace en 644 y ssh lo rechaza. Falta chmod 600 al archivo y 700 al directorio
@@ -80,31 +79,35 @@
 
 - [ ] `~` 2026-08-12 —systemd y journalctl (cuando haya un servicio), arrays asociativos (cuando el logger necesite filtrar), 
       lsof +L1  (ya lo entiendes conceptualmente; lo reproduces cuando un disco se llene de verdad).
+      --- systemd, arrays asociativos y lsof +L1. De las tres, lsof ya lo entiendes conceptualmente.
 
 - [X] `!` 2026-08-13 — el intercambio: `find | while` da PIPESTATUS pero pierde el contador; `while < <(find)` conserva el contador pero pierde el estado. Cómo tener las dos → viernes
      → RESUELTA 08-14:— camino A + C implementados
 - [ ] `?` 2026-08-13 — `IdentitiesOnly yes`: probarlo cuando tenga más de una clave
-- [ ] `~` 2026-08-13 — `$$` vs `$BASHPID` en subshells. Aplica cuando depure procesos
-
+- [X] `~` 2026-08-13 — `$$` vs `$BASHPID` en subshells. Aplica cuando depure procesos
+    → RESUELTA 08-24:— escrito en procesos.md
 - [X] `?` 2026-08-13 — `Host local` no tiene User: confirmar si es intencional
      → RESUELTA 08-15: Sin User, ssh usa tu usuario local (mlizz).
 
-- [ ]`!` 2026-08-14 — wait $! sobre sustitución de proceso, el camino B que quedó sin probar. Y el mensaje ambiguo de contar-lineas.sh sin argumento, que sigue abierto desde el 08-07.
 
 - [ ] `!` tarea 2026-08-15 — auditoría de notes/bash/: borrar enlaces-simbolicos.md,
       corregir .aws en entorno.md, quitar §7-8, marcar 4 pendientes muertos,
       escribir procesos.md y errores.md, archivar los dos transcripts, partir ssh.md
       ACTUALIZACIÓN 08-17: Falta: escribir procesos.md y errores.md desde bash-set-euo-pipefail.md, archivar los dos transcripts, partir ssh.md sacando permisos.md, quitar el duplicado de 2>/dev/null y el de | tail
 
+      ACTUALIZACIÓN 08-24: Lo que queda: archivar los dos transcripts, partir ssh.md sacando permisos.md, y quitar el duplicado de 2>/dev/null y el de | tail. Reescríbela con solo eso.
+
 - [ ] `!` 2026-08-17 — `wait $!` sobre sustitución de proceso: $! SÍ queda con el PID (verificado). Es el camino B del intercambio del (...).     Probar si el estado que devuelve es el de find, y anotar la versión de bash
-- [ ] `?` 2026-08-17 — ejercicio 3 de L5: borrar un archivo del historial con git filter-repo. Miércoles, junto con bisect
-- [ ] tarea 2026-08-17 — PR al repo del curso (ejercicio 7). Sábado, junto con las vacantes. Un PR aceptado es pieza de portafolio
+- [X] `?` 2026-08-17 — ejercicio 3 de L5: borrar un archivo del historial con git filter-repo. Miércoles, junto con bisect
+  → RESUELTA 08-18:— el clon de missing-semester
+- [X] tarea 2026-08-17 — PR al repo del curso (ejercicio 7). Sábado, junto con las vacantes. Un PR aceptado es pieza de portafolio
 
 - [X] tarea 2026-08-18 — notes/git.md: merge vs rebase en términos del grafo. Va en la versión de una página, no en la de 881 líneas
 - [X] tarea 2026-08-18 — gitconfig como cuarto dotfile en install.sh (1 min). Ya existe el archivo con el alias git graph
 
-- [ ] tarea 2026-08-20 — pasar bisect2.pdf a practice/missing-semester/lecture05/solved.md con bloques de texto, no capturas
-- [ ] tarea 2026-08-20 — partir notes/git.md → notes/git/ con basico.md, merge-y-rebase.md y arqueologia.md
+- [X] tarea 2026-08-20 — pasar bisect2.pdf a practice/missing-semester/lecture05/solved.md con bloques de texto, no capturas
+    → RESUELTA 08-24:— bistec-solved.md
+- [X] tarea 2026-08-20 — partir notes/git.md → notes/git/ con basico.md, merge-y-rebase.md y arqueologia.md
 - [ ] tarea 2026-08-20 — corregir el hash del segundo diagrama de merge (no puede ser 82qaskd en los dos casos)
 
 - [ ] `~` 2026-08-20 — bisect run cuando la prueba vive en el repo: ¿cómo se garantiza que no cambió en el rango? Aplica cuando tenga un proyecto con tests
