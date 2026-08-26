@@ -66,3 +66,13 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   se repiten <tecnologías>. Poda de pendientes: 49 entradas en 24 días → 17 abiertas,
   de las cuales UNA es duda real (wait $!). De ocho marcadas !, siete eran tareas —
   tercer mes que aparece el patrón · cierra semana 3
+
+- 2026-08-25 · L9 Code Quality leída (linters sobre AST, CI/CD, formateadores en
+  modo check; el bloque de pruebas y tipado va a pendientes con fecha). Esqueleto de
+  scripts/ingesta.sh: log, --help con tabla de códigos, parseo de 3 argumentos y
+  validación de uso, directorio y permisos. shellcheck usado durante la escritura,
+  no al final — cuatro errores de sintaxis atrapados antes de correr nada · el regex
+  de columnas rechazaba TODO (pedía comillas literales que bash ya se había comido)
+  y no lo detecté porque las tres pruebas murieron antes de llegar a él. Tercera vez
+  este mes que pruebo el camino viejo en vez del que acabo de escribir · `^` sin `$`
+  es media validación: la coincidencia puede terminar donde sea

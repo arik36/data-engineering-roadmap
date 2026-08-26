@@ -120,3 +120,8 @@
       proyecto con pruebas
 
 - [ ] `~` 2026-08-20 — el equivalente del README/--help en Python es el wheel con sus metadatos. Ver al empaquetar algo real
+
+- [ ] `~` 2026-08-25 — L9: mock de dependencias externas (BD, API) en pruebas. SEPTIEMBRE, con Python y un proyecto con tests
+- [ ] `~` 2026-08-25 — L9: cobertura de código, qué mide y por qué no obsesionarse. Con el mismo proyecto
+- [ ] `~` 2026-08-25 — L9: lenguajes de tipado estático y type hints de Python. SEPTIEMBRE
+- [ ] `?` 2026-08-25 — regex anclado: probar `^` sin `$` sobre otro caso y ver qué coincide con BASH_REMATCH
