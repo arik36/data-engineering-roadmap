@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+set -x
 
 log(){
     local tipo="$1";
@@ -19,13 +20,15 @@ cat <<EOF
     
 
     Códigos de salida:
-    exit 0 — Exito
-    exit 1 — el HTTP no es 200
-    exit 2 — la validación de contenido falla
-    exit 3 — alguno de los argumentos no fue brindado
-    exit 4 — directorio no existe
-    exit 5 — el directorio existe pero no hay permisos suficientes
-    exit 6 — formato del ultimo argumento es incorrecto
+    exit 0 — éxito
+    exit 1 — fallo inesperado (set -e). No lo asigno yo
+    exit 2 — el HTTP no es 200
+    exit 3 — la validación de contenido falla
+    exit 4 — falta algún argumento
+    exit 5 — el directorio no existe
+    exit 6 — el directorio existe pero sin permisos suficientes
+    exit 7 — formato del argumento columnas incorrecto
+    exit 8 — la URL no es accesible
 
 EOF
 exit 0
@@ -50,7 +53,7 @@ if [ ! -r "$directorio" ] || [ ! -w "$directorio" ]; then
     exit 5
 fi
 
-#para validar el formato de columnas, se espera un string con palabras separados por comas
+# para validar el formato de columnas, se espera un string con palabras separados por comas
 # no comas al inicio ni al final, y no espacios entre palabras
 regex='^[^,]+(,[^,]+)*$'
 
@@ -58,3 +61,17 @@ if  [[ ! "$columnas" =~ $regex ]]; then
     log ERROR "el formato del argumento columnas es incorrecto"
     exit 6
 fi
+# Validación de la URL
+http_code=$(curl -sS -o "$directorio" -w "%{http_code}" "$url")
+
+if [ "$http_code" -ne 200 ]; then
+    log ERROR "la URL $url devolvió un código diferente a 200: $http_code"
+    exit 2
+fi
+
+if [ "$http_code" -eq 000 ]; then
+    log ERROR "la URL $url no es accesible"
+    exit 8
+fi
+
+

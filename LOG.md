@@ -76,3 +76,14 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   y no lo detecté porque las tres pruebas murieron antes de llegar a él. Tercera vez
   este mes que pruebo el camino viejo en vez del que acabo de escribir · `^` sin `$`
   es media validación: la coincidencia puede terminar donde sea
+
+- 2026-08-26: añadimos validacion de url para ingesta.sh, respondemos las siguientes dudas.
+  Al revisar cómo funciona cURL, vimos que esta herramienta maneja el contenido de la página y los metadatos por caminos separados. Por un lado, la bandera -o le indica a cURL que guarde el cuerpo de la respuesta directamente en un archivo. Por otro lado, la bandera -w sirve para imprimir información específica.
+  Cuando usas curl, la herramienta maneja el cuerpo de la respuesta (el contenido del sitio web o archivo) y los metadatos (estadísticas, tiempos, códigos HTTP) por caminos separados.
+
+  -El parámetro -o /tmp/x.csv le dice a curl: "Toma el cuerpo de la respuesta HTTP y envíalo  directamente a este archivo".
+
+  -El parámetro -w '%{http_code}\n' (write-out) está diseñado específicamente para imprimir la información que le pidas directamente en la salida estándar de la terminal (stdout), sin importar a dónde hayas mandado el archivo descargado. Por eso ves el código en la pantalla.
+  cURL puede reportar un éxito en la terminal aunque la página falle. 
+  Si cURL logra conectarse al servidor, terminará con un exit 0 que representa un éxito de red, sin importar si el servidor devuelve un error 404 Not Found. En cambio, un exit 6 indica un error de red donde el dominio no puede resolverse y cURL no puede siquiera iniciar la conexión a internet. Para revisar todos estos códigos de salida a detalle: man curl seguido de / y escribir EXIT CODES.
+  
