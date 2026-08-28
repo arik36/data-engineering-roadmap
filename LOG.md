@@ -86,4 +86,13 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   -El parámetro -w '%{http_code}\n' (write-out) está diseñado específicamente para imprimir la información que le pidas directamente en la salida estándar de la terminal (stdout), sin importar a dónde hayas mandado el archivo descargado. Por eso ves el código en la pantalla.
   cURL puede reportar un éxito en la terminal aunque la página falle. 
   Si cURL logra conectarse al servidor, terminará con un exit 0 que representa un éxito de red, sin importar si el servidor devuelve un error 404 Not Found. En cambio, un exit 6 indica un error de red donde el dominio no puede resolverse y cURL no puede siquiera iniciar la conexión a internet. Para revisar todos estos códigos de salida a detalle: man curl seguido de / y escribir EXIT CODES.
+
+--correciones
+  - 2026-08-26 · ingesta.sh: descarga con curl, mktemp + trap EXIT + mv al destino,
+  exit 2 (HTTP≠200) y 8 (curl falla). Cinco casos verificados, directorio limpio en
+  los dos fallos. Tres bugs propios encontrados trazando: -o apuntaba al directorio,
+  el exit 8 era inalcanzable porque set -e mataba la asignación antes de los if, y el
+  nombre con timestamp hacía imposible la idempotencia · curl distingue http_code de
+  exit status: un 404 es exit 0 · $? dentro de `if ! cmd` no trae el estado del
+  comando, solo `cmd || {}` · 403 al hacer push: hacía falta un PAT
   

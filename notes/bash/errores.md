@@ -110,9 +110,98 @@ Todo lo de abajo es una instancia de eso.
 
 ---
 
+# Adiciones a `notes/bash/errores.md`
+
+Bloques listos para pegar. Fecha: 2026-08-26.
+
+---
+
+## En "Cómo se rompe — el estado se pierde", agregar:
+
+- **`if ! cmd; then` pierde el código de salida; `cmd || { ... }` lo conserva.** Para cuando
+  entras al `then`, `$?` ya es el de evaluar la condición, no el del comando. Verificado:
+
+  ```bash
+  if ! salida=$(bash -c "exit 6"); then echo "$?"; fi    # → 0   perdido
+  salida=$(bash -c "exit 6") || { echo "$?"; }           # → 6   ahí está
+  ```
+
+  Si necesito distinguir *por qué* falló —`curl` 6 de DNS, 23 de escritura— el `||` es el
+  único que me lo da.
+
+---
+
+## En "Cómo se rompe — la trampa está en el comando", agregar:
+
+- **`trap ... EXIT` se ejecuta SIEMPRE que el script termina**, no solo con errores: salida
+  exitosa, `exit` explícito, corte por `set -e`, o Ctrl-C. Verificado en los tres caminos.
+  Por eso es el de limpieza, y el que garantiza que un `mktemp` no quede tirado.
+
+  | Evento | Cuándo dispara |
+  |---|---|
+  | `EXIT` | **toda** salida del script |
+  | `ERR` | solo un comando que devuelve ≠ 0 |
+  | `INT` | solo Ctrl-C |
+
+  Complementa lo que ya está anotado: `exit` no dispara `ERR` porque no falla — ordena
+  terminar.
+
+- **Una herramienta puede tener dos nociones de éxito.** `curl` sale con 0 aunque el servidor
+  responda 404: para `curl`, entregar la respuesta *es* el éxito. El estado del servicio
+  remoto es un **dato**, no un fallo, y hay que pedirlo aparte con `-w '%{http_code}'`.
+
+  Es la misma familia que `awk` devolviendo columnas vacías: éxito del proceso, resultado
+  inservible.
+
+- **`-eq` exige enteros y revienta con una variable vacía.** Para "está vacía" lo idiomático
+  es `-z`, no `!=` — que funciona pero compara cadenas.
+
+  Y no existe `null` en bash: solo cadena vacía, `unset`, o la variable que nunca se definió.
+  Por eso `set -u` es la red que avisa del tercer caso.
+
+---
+
+## En "Cómo se rompe — validar de más o de menos", agregar:
+
+- **Descargar directo al archivo final deja basura si la descarga falla.** `curl -o destino.csv`
+  escribe ahí la página HTML de error del servidor, y el `.csv` queda con contenido plausible
+  y equivocado. Descargar a `mktemp` y `mv` solo si la validación pasó.
+
+- **Un nombre con timestamp destruye la idempotencia.** `%Y%m%dT%H%M%S` cambia cada segundo,
+  así que dos corridas del mismo día dejan dos archivos. `%Y-%m-%d` **provoca la colisión a
+  propósito**: es lo que permite preguntar `[ -f "$destino" ]` y salir sin volver a bajar
+  nada.
+
+  ```
+  con timestamp:  2026-08-27T100001_reporte.csv  y  2026-08-27T163000_reporte.csv
+  con fecha:      2026-08-27_reporte.csv          las dos veces
+  ```
+
+  La colisión no es un defecto que haya que evitar: es el mecanismo.
+
+- **`basename` es para rutas del sistema, no para URLs.** Verificado:
+
+  ```bash
+  basename 'https://x.com/datos.csv?token=abc&v=2'   → datos.csv?token=abc&v=2
+  basename 'https://x.com/api/ventas/'               → ventas
+  ```
+
+  El primero crearía un archivo con `?` y `&` en el nombre; el segundo devuelve un directorio
+  como si fuera archivo. Limpiar antes: `${url%%\?*}` corta desde el primer `?`.
+
+  Con un solo `?`, `%%` y `%` dan lo mismo. La diferencia aparece con varios: `%%` corta
+  desde el primero, `%` desde el último.
+
+- **Una línea de `crontab` es estática.** Todo lo que cambia —la fecha, sobre todo— lo tiene
+  que calcular el script en el momento. Una fecha escrita en el crontab sobrescribe el mismo
+  archivo para siempre.
+
+---
+
 ## Pendientes
 
 - **Pasarle `shellcheck` a `install.sh`.** A `contar-lineas.sh` ya se lo corrí; a `install.sh` no, desde que le metí funciones.
+Listo en 27/08/26
 
   Y vale anotar por qué eso no cancela nada de lo de arriba: **shellcheck detecta patrones peligrosos, no fallos silenciosos de lógica.** Ninguna de estas líneas nació de shellcheck — todas nacieron de un script que falló en silencio. Las dos cosas son necesarias y ninguna reemplaza a la otra.
 

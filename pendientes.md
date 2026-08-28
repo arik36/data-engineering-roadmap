@@ -125,3 +125,8 @@
 - [ ] `~` 2026-08-25 — L9: cobertura de código, qué mide y por qué no obsesionarse. Con el mismo proyecto
 - [ ] `~` 2026-08-25 — L9: lenguajes de tipado estático y type hints de Python. SEPTIEMBRE
 - [ ] `?` 2026-08-25 — regex anclado: probar `^` sin `$` sobre otro caso y ver qué coincide con BASH_REMATCH
+
+- [ ] tarea 2026-08-26 — ingesta.sh: chmod 644 tras el mv (mktemp crea en 600 y mv los conserva)
+- [ ] tarea 2026-08-26 — ingesta.sh: mktemp --tmpdir="$directorio" para que el mv sea atómico
+- [ ] tarea 2026-08-26 — ingesta.sh: corregir el comentario de date (dice lo contrario) y quitar el .csv duplicado
+- [ ] tarea 2026-08-26 — documentar el PAT en notes/git-github/
