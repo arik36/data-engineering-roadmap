@@ -74,12 +74,15 @@ fi
 # nombre_archivo-> cut Elimina todo lo que esté después del signo '?' antes de pasarlo a basename
 nombre_archivo=$(basename "${url%%\?*}")
 fecha=$(date -u +%Y-%m-%d)
-archivo_destino="$directorio/${fecha}_${nombre_archivo}.csv"
+#usamos % para quitar la extensión .csv del nombre del archivo, si es que la tiene
+archivo_destino="$directorio/${fecha}_${nombre_archivo%.csv}.csv"
 # aun no estamos creando el archivo destino, solo estamos definiendo su nombre
 
 # 3.- Preparación de la descarga
 # hacemos un archivo destino temporal por si falla la descarga, no se guarda un archivo vacío con el nombre final
 # usamos mktemp para crear un archivo temporal, sin argumentos mktemp crea en /tmp
+
+# OJO: mktemp crea a 600 por diseño
 archivo_temporal=$(mktemp --tmpdir="$directorio" ingesta.XXXXXX)
 # limpiamos el archivo temporal al salir del script, sin importar si fue exitoso o no
 trap 'rm -f "$archivo_temporal"' EXIT
@@ -104,6 +107,69 @@ if [ "$http_code" -ne 200 ]; then
     exit 2
 fi
 
+# 4.- Validación del contenido
+# validamos que el archivo temporal cumpla los siguientes criterios:
+# 1. No esté vacío
+# 2. Que tenga al menos una línean de datos (la primera línea es el cabezal)
+# 3. Que contenga el número de columnas que se espera
+
+# -s pregunta si el archivo tiene tamaño mayor a 0, si no tiene tamaño mayor a 0,
+# significa que está vacío, por lo que no cumple el criterio 1
+# si pasa el if sabemos que tiene almenos una línea.
+if [ ! -s "$archivo_temporal" ]; then
+    log ERROR "el archivo descargado está vacío"
+    exit 3
+fi
+
+# para el punto 2 podriamos pensar en usar wc -l, 
+# pero si el archivo no tiene saltos de línea, 
+# wc -l devuelve 0, por lo que usamos grep para contar las líneas
+# usamos -lt 2 porque si el archivo tiene una sola línea en realidad 
+# es el cabezal del archivo, por lo que no hay datos
+if [ "$(grep -c '^' "$archivo_temporal")" -lt 2 ]; then
+    log ERROR "el archivo descargado no tiene líneas"
+    exit 3
+fi
+
+#punto 3: validamos que las columnas del archivo descargado sean las mismas 
+#que las que se esperan
+# para esto usamos head -n 1 para obtener la primera línea del archivo temporal
+# comparamos que los nombres de las columnas sean los mismos
+
+IFS=',' read -ra pedidas <<< "$columnas"
+# comprobamos que cada columna pedida esté en el archivo temporal sin importar el orden
+
+# ahora trabajamos con el cabezal del archivo temporal, quitamos los saltos de línea 
+# y retornos de carro, las comas al inicio y al final del cabezal se agregan para 
+# que la búsqueda de columnas sea más precisa
+cabecera=",$(head -n 1 "$archivo_temporal" | tr -d '\r'),"
+
+# Declaramos una variable vacía antes del bucle, y dentro, 
+# en lugar de exit 3, vamos pegando el nombre de la columna que falta.
+columnas_faltantes=""
+for columna in "${pedidas[@]}"; do
+    if [[ "$cabecera" != *,"$columna,"* ]]; then
+        columnas_faltantes="$columnas_faltantes, $columna"
+    fi
+done
+
+if [ -n "$columnas_faltantes" ]; then
+    # Quitamos la primera coma y espacio sobrantes usando ${variable#patrón}
+    columnas_limpias="${columnas_faltantes#, }"
+    log ERROR "las siguientes columnas no se encuentran en el archivo descargado: $columnas_limpias"
+    exit 3
+fi
+
 # 5. Si todo salió bien, mover el temporal al destino final
+# mv aqui hace que el archivo temporal se mueva al destino final, si el archivo destino 
+# ya existe, mv lo sobreescribe
+
+# mv conserva los permisos del archivo temporal, por lo que si el archivo temporal es 600, 
+# el archivo destino también será 600.
+# el chmod va después del mv, no después del mktemp. 
+# Si lo ponemos antes, estamos dando permisos a un archivo que quizá se borra sin llegar
+# a destino. Igual que la validación: primero verificas, luego expones.
+
 mv "$archivo_temporal" "$archivo_destino"
+chmod 644 "$archivo_destino"
 echo "$archivo_destino"

@@ -95,4 +95,13 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   nombre con timestamp hacía imposible la idempotencia · curl distingue http_code de
   exit status: un 404 es exit 0 · $? dentro de `if ! cmd` no trae el estado del
   comando, solo `cmd || {}` · 403 al hacer push: hacía falta un PAT
+
+- 2026-08-28 · ingesta.sh: validación de contenido (no vacío, >1 línea, cabecera
+  contiene las columnas pedidas) con exit 3, más las cuatro tareas del 26: chmod 644
+  tras el mv, mktemp --tmpdir para que el mv sea atómico, .csv duplicado. Tres bugs
+  en la validación de columnas: grep -q casaba subcadenas ("Country" pasaba dentro de
+  "Country Name"), grep interpreta el patrón como regex, y al arreglar lo anterior
+  reapareció el \r de la cabecera — los dos primeros se estaban cancelando ·
+  la coma delimita el campo: rodear la cabecera de comas convierte "¿aparecen estas
+  letras?" en "¿existe este campo?"
   

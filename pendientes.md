@@ -130,3 +130,6 @@
 - [ ] tarea 2026-08-26 — ingesta.sh: mktemp --tmpdir="$directorio" para que el mv sea atómico
 - [ ] tarea 2026-08-26 — ingesta.sh: corregir el comentario de date (dice lo contrario) y quitar el .csv duplicado
 - [ ] tarea 2026-08-26 — documentar el PAT en notes/git-github/
+
+- [ ] tarea 2026-08-27 — escribir notes/bash/texto.md y notes/bash/permisos.md (esta última pendiente desde el 08-06, sacando lo de ssh.md)
+- [ ] `?` 2026-08-27 — RS y NF en awk: probarlos sueltos si vuelvo a necesitar awk. Hoy solo usé el conteo
