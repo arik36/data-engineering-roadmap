@@ -104,4 +104,13 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   reapareció el \r de la cabecera — los dos primeros se estaban cancelando ·
   la coma delimita el campo: rodear la cabecera de comas convierte "¿aparecen estas
   letras?" en "¿existe este campo?"
+
+  - 2026-08-31 · Idempotencia: política 1 (si el archivo del día existe, no descargar y
+  salir con 0 respetando el contrato de stdout). Detecté que "reemplazar la partición"
+  NO garantiza idempotencia si la fuente muta entre corridas — idempotencia y datos
+  frescos son objetivos en conflicto, y el reprocesamiento intencional va por bandera
+  aparte. cron: los cinco campos, dom y dow se combinan con OR, PATH mínimo, salida
+  al correo local. Línea instalada con rutas absolutas y log a logs/ (en .gitignore).
+  Verificado con env -i: el script sobrevive sin entorno · notes/bash/texto.md y
+  permisos.md escritas
   

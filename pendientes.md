@@ -133,3 +133,8 @@
 
 - [ ] tarea 2026-08-27 — escribir notes/bash/texto.md y notes/bash/permisos.md (esta última pendiente desde el 08-06, sacando lo de ssh.md)
 - [ ] `?` 2026-08-27 — RS y NF en awk: probarlos sueltos si vuelvo a necesitar awk. Hoy solo usé el conteo
+
+
+- [ ] `!` 2026-08-31 — ingesta.sh acepta rutas relativas y las resuelve contra su pwd. Bajo cron eso escribe en el lugar equivocado sin fallar. ¿Exigir absoluta o convertir al recibirla?
+- [ ] tarea 2026-08-31 — --force para reprocesar el día en curso. Necesita mover el parseo de argumentos
+- [ ] `?` 2026-08-31 — probar cron con la hora a +2 min y ver qué queda en logs/ingesta.log. Los log INFO van a stderr, así que el "log de errores" traerá mensajes de éxito — decidir si eso está bien

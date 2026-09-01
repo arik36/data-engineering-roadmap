@@ -78,6 +78,13 @@ fecha=$(date -u +%Y-%m-%d)
 archivo_destino="$directorio/${fecha}_${nombre_archivo%.csv}.csv"
 # aun no estamos creando el archivo destino, solo estamos definiendo su nombre
 
+#agregamos idempotencia, si el archivo destino ya existe, no hacemos nada y salimos con éxito
+if [ -f "$archivo_destino" ]; then
+    log INFO "el archivo $archivo_destino ya existe, no se descargará de nuevo"
+    echo "$archivo_destino"
+    exit 0
+fi
+
 # 3.- Preparación de la descarga
 # hacemos un archivo destino temporal por si falla la descarga, no se guarda un archivo vacío con el nombre final
 # usamos mktemp para crear un archivo temporal, sin argumentos mktemp crea en /tmp
@@ -173,3 +180,4 @@ fi
 mv "$archivo_temporal" "$archivo_destino"
 chmod 644 "$archivo_destino"
 echo "$archivo_destino"
+
