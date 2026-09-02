@@ -117,3 +117,11 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+# Agente SSH persistente
+if [ -z "$SSH_AUTH_SOCK" ]; then
+   RUNNING=$(ps -u "$USER" -o comm= | grep -c ssh-agent)
+   if [ "$RUNNING" -eq 0 ]; then
+      ssh-agent -s > ~/.ssh/agent.env
+   fi
+   [ -f ~/.ssh/agent.env ] && . ~/.ssh/agent.env > /dev/null
+fi

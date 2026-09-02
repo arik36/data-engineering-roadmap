@@ -1,9 +1,14 @@
 [user]
-	name = arik36
-	email = beckerastoria@gmail.com
+	name = Ariadne Macías
+	email = 213274001+arik36@users.noreply.github.com
 [credential]
 	helper = store
 [alias]
 	graph = log --all --graph --decorate --oneline
 [core]
 	excludesfile = /home/mlizz/.gitignore_global
+	autocrlf = false
+[init]
+	defaultBranch = main
+[pull]
+	rebase = true

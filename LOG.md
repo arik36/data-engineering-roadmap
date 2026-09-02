@@ -105,7 +105,7 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   la coma delimita el campo: rodear la cabecera de comas convierte "¿aparecen estas
   letras?" en "¿existe este campo?"
 
-  - 2026-08-31 · Idempotencia: política 1 (si el archivo del día existe, no descargar y
+  - 2026-08-30 · Idempotencia: política 1 (si el archivo del día existe, no descargar y
   salir con 0 respetando el contrato de stdout). Detecté que "reemplazar la partición"
   NO garantiza idempotencia si la fuente muta entre corridas — idempotencia y datos
   frescos son objetivos en conflicto, y el reprocesamiento intencional va por bandera
@@ -113,4 +113,12 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   al correo local. Línea instalada con rutas absolutas y log a logs/ (en .gitignore).
   Verificado con env -i: el script sobrevive sin entorno · notes/bash/texto.md y
   permisos.md escritas
+
+  - 2026-08-31 · Capstone cerrado. shellcheck limpio. Tres datasets reales (gdp,
+  sea-level, vix) con exit 0, permisos 644 y contenido verificado; "contiene"
+  confirmado pidiendo 2 de 5 columnas. Fallo de datos limpio: HTTP 200, validación
+  rechaza y no deja archivo en el destino. Idempotencia verificada por mtime ·
+  hallazgo: la política 1 corta antes de validar, así que un archivo ya existente
+  se da por bueno sin comprobar que cumpla lo pedido · curl (23) con `| head -1`
+  es carrera con el pipe cerrado, no fallo del servidor
   
