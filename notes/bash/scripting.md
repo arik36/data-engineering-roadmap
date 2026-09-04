@@ -47,6 +47,7 @@ $0 = ./donde.sh        dirname = .
 $ cd / && /tmp/donde.sh
 $0 = /tmp/donde.sh     dirname = /tmp
 ```
+Cuando utilizas source o . para ejecutar un script, las instrucciones se evalúan directamente dentro de la sesión actual de la terminal sin generar un subproceso independiente. Dado que el contexto del proceso no cambia, la variable especial $0 retiene el nombre del programa principal que está leyendo los comandos.
 
 ### Una ruta relativa guardada en un enlace se resuelve desde otro lado
 

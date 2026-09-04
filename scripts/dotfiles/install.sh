@@ -46,3 +46,7 @@ enlazar bash_aliases "$HOME/.bash_aliases"
 enlazar ssh/config "$HOME/.ssh/config"
 enlazar gitconfig "$HOME/.gitconfig"
 
+# Corrección de permisos para SSH
+chmod 700 "$HOME/.ssh"
+chmod 600 "$DOTFILES_DIR/ssh/config"
+

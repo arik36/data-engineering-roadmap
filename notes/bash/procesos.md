@@ -19,7 +19,7 @@ de `set -e`.
 | `bg %1` | reanudar en segundo plano |
 | `kill %1` / `kill PID` | señal al trabajo / al proceso |
 | `$!` | PID del último lanzado con `&` |
-| `$$` / `$BASHPID` | PID de la shell / PID real |
+| `$$` / `$BASHPID` | PID del script que arrancó / PID real de *este* proceso (solo bash) |
 | `wait $PID` | esperar y recibir su código de salida |
 | `kill -0 PID` | ¿existe y puedo señalarlo? Sin mandar nada |
 | `nohup cmd &` | que sobreviva al cierre de la terminal |
@@ -223,14 +223,57 @@ El proceso se llama `python`, no `etl.py`. Sin `-f`, no lo encuentra.
 
 ## Cómo se rompe
 
-### `$$` miente dentro de una subshell
+### `$$` miente en cualquier subproceso, no solo en una subshell
+
+`$$` es el PID del **script que arrancó**. `$BASHPID` es el del proceso que ejecuta la línea
+*en este instante*. Verificado en las seis construcciones que crean un proceso:
 
 ```
-shell:    $$=486  BASHPID=486
-subshell: $$=486  BASHPID=487
+principal                    $$=1587   BASHPID=1587
+subshell ( ... )             $$=1587   BASHPID=1588
+sustitución $( ... )         $$=1587   BASHPID=1589
+lado derecho de un pipe      $$=1587   BASHPID=1591
+lado izquierdo de un pipe    $$=1587   BASHPID=1592
+en segundo plano &           $$=1587   BASHPID=1594
+de vuelta en el principal    $$=1587   BASHPID=1587
 ```
 
-`$$` reporta el PID de la shell original. El real es **`$BASHPID`**.
+`$$` es ciego a **las tres construcciones que más uso**: `( )`, `|` y `$( )`. Y `$BASHPID`
+vuelve a su valor original al salir del subproceso — no es un contador, es "quién soy ahora".
+
+**Consecuencia para diagnóstico:** si un hijo falla y buscas `$$` en `ps` o en el log, estás
+rastreando al padre, no al proceso que falló. Un `trap ... EXIT` corre en el padre, así que
+también reporta el PID del padre:
+
+```bash
+$ trap 'echo "trap en BASHPID=$BASHPID"' EXIT
+$ ( echo "hijo BASHPID=$BASHPID"; exit 1 )
+hijo BASHPID=1604
+trap en BASHPID=1603      ← el padre, no el que falló
+```
+
+### `$BASHPID` no existe fuera de bash, y su ausencia no avisa
+
+`$$` es **POSIX**; `$BASHPID` es una **extensión de bash**. En una `sh` pura no existe — y no
+da error: sale **vacío**.
+
+```bash
+$ dash -c 'tmp="/tmp/limpieza.$BASHPID"; echo "$tmp"'
+/tmp/limpieza.            ← un nombre plausible, sin PID
+```
+
+Es el mismo modo de falla de `errores.md`: **vacío no es cero, y no avisa.** Dos scripts
+distintos escribirían al mismo `/tmp/limpieza.` y se pisarían.
+
+`set -u` sí lo atrapa, y es una razón más para llevarlo puesto:
+
+```bash
+$ dash -c 'set -u; echo "$BASHPID"'
+dash: 1: BASHPID: parameter not set     # exit 2
+```
+
+Si el script tiene que ser portable, lo que hay es `$$` más `mktemp` — que da unicidad sin
+depender del PID.
 
 ### `set -e` no cruza a un script hijo
 

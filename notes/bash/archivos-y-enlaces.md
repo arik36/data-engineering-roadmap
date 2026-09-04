@@ -167,6 +167,13 @@ El único que se niega es `-T`:
 $ ln -sfT /tmp/p/real.txt realdir
 ln: realdir: cannot overwrite directory
 ```
+Lo que hace -T dependiendo de lo que haya en el destino:
+
+-Si el directorio real ya existe: El comando falla de inmediato y muestra un mensaje como ln: cannot overwrite directory 'destino'. Esto actúa como un seguro: evita que destruyas una carpeta por accidente y también evita que el enlace se esconda dentro de ella.
+
+-Si no existe nada con ese nombre: Crea el enlace simbólico sin problemas, dándole exactamente el nombre que escribiste en el destino.
+
+-Si existe un archivo normal o un enlace viejo: Lo borra y lo reemplaza por tu nuevo enlace (esto ocurre gracias a que lo estás combinando con -f, que fuerza el reemplazo).
 
 Para reemplazar un directorio real hay que borrarlo antes, con `rmdir` o `rm -r`.
 

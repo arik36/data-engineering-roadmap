@@ -118,6 +118,27 @@ El árbol es idéntico y las fechas son idénticas. Lo único que cambió es el 
 
 Y esto lo predice el hecho 1 solo: si el hash incluye a los padres, incluye el orden en que están listados.
 
+**Reproducido por mí en un repo limpio** (2026-09-03), con la misma topología y las fechas fijadas:
+
+```bash
+export GIT_AUTHOR_DATE="2026-01-01T00:00:00Z" GIT_COMMITTER_DATE="2026-01-01T00:00:00Z"
+git switch master && git merge --no-edit salty    # caso A
+# ...deshacer con git reset --hard HEAD~1...
+git switch salty  && git merge --no-edit master   # caso B
+```
+
+```
+caso A — parado en master:  7f2d5b5   padres: master-c, salty-2
+caso B — parado en salty:   a98a46f   padres: salty-2, master-c
+
+árbol en los dos:           c5672a5
+```
+
+Los hashes concretos no coinciden con `92e51a2` / `4e93186` — dependen del contenido, del
+autor y del mensaje, que no son los mismos. **El hecho sí se reproduce**: mismo árbol, orden
+de padres invertido, commit distinto. Y en los dos casos la otra rama no se movió, y `sweet`
+quedó intacta.
+
 **El primer padre es siempre donde estaba HEAD.** No es cosmético: `git log --first-parent` recorre únicamente esa línea, y es la forma de leer la historia de `main` ignorando el ruido de todas las ramas que se le mezclaron.
 
 ### Qué le pasó a cada commit
@@ -211,13 +232,31 @@ Ese `1bd92ce → af6d933` es literalmente la prueba: mismo trabajo ("usamos azuc
 ## Cómo se rompe
 
 - `git rebase <destino>` desde la rama que se mueve. **HEAD es la que se reescribe; el argumento no se toca.** Invertirlo reescribe la rama equivocada.
-- Si el destino ya es ancestro, el rebase no hace nada: `Current branch is up to date`.
-- El merge en ese mismo caso hace **fast-forward y no crea commit** — solo avanza la etiqueta. `--no-ff` lo fuerza.
+- Si el destino ya es ancestro, el rebase no hace nada: `Current branch salty is up to date.`
+- **El simétrico del merge NO es uno solo: depende de dónde estés parada.** En esa misma
+  topología —`salty` adelante, `master` atrás— hay dos resultados distintos:
+
+  | Dónde estás | Comando | Qué pasa |
+  |---|---|---|
+  | en `salty` (la adelantada) | `git merge master` | `Already up to date.` — **no hay fast-forward**, no hay nada que traer |
+  | en `master` (la atrasada) | `git merge salty` | `Updating bc3539e..9531561` + `Fast-forward` — avanza la etiqueta, sin crear commit |
+
+  `--no-ff` fuerza el merge commit en el segundo caso. El primero no tiene nada que forzar.
 - **El orden de los padres es parte del hash.** El primer padre es siempre donde estaba HEAD. Mergear A→B y B→A produce el mismo árbol y commits distintos.
 - El conflicto no es entre las dos ramas: es entre **lo que la rama receptora ya tiene y lo que llega**. El primero entra limpio.
 - Merge cierra con `git commit`; rebase con `git rebase --continue`. Los dos tienen `--abort`.
 - **No rebasar commits que otros ya tienen**: sus copias apuntan a hashes que dejaron de existir.
-- Los commits huérfanos siguen en disco ~30 días. `git reflog` + `git reset --hard`.
+- **Los huérfanos tienen dos relojes distintos y conviene no confundirlos:**
+
+  | Qué quedó huérfano | Config | Ventana |
+  |---|---|---|
+  | un commit que el **reflog** recuerda (HEAD estuvo ahí) | `gc.reflogExpireUnreachable` | **30 días** |
+  | un objeto que solo encuentra **`git fsck`** (un blob de un `git add` que nunca fue HEAD) | `gc.pruneExpire` | **2 semanas** |
+
+  Mientras la entrada del reflog viva, el commit es *alcanzable desde el reflog* y el `gc` no
+  lo poda — por eso la ventana práctica tras un rebase es la de 30 días, y se rescata con
+  `git reflog` + `git reset --hard`. (Y por eso `tres-estados.md` habla de 2 semanas para el
+  blob perdido en el índice: es el otro reloj, no una contradicción.)
 
 ---
 
@@ -240,88 +279,19 @@ Ese `1bd92ce → af6d933` es literalmente la prueba: mismo trabajo ("usamos azuc
 | `git reflog` | Cada movimiento de HEAD, ~30 días | El salvavidas cuando el rebase **ya terminó** mal |
 | `git reset --hard <sha>` | Volver a un punto seguro | Se usa con el sha que salió del reflog |
 
----
-
-# git — autenticación con GitHub
-
-**Fuente:** bitácora propia · 2026-08-26, al intentar `git push` sobre el repo del roadmap
 
 ---
-
-## Modelo mental
-
-**GitHub ya no acepta contraseñas de cuenta por HTTPS.** Las quitó porque una contraseña da
-acceso a todo —repos, ajustes, facturación— y no se puede revocar por partes.
-
-Lo que se usa en su lugar es un **token**: una credencial aparte, con permisos acotados, con
-fecha de expiración, y revocable sola sin tocar la cuenta.
-
-Hay dos caminos, y la elección se hace una vez:
-
-| | HTTPS + token | SSH + clave |
-|---|---|---|
-| Credencial | PAT | par de claves `ed25519` |
-| Dónde vive | en el gestor de credenciales o en la URL del remote | `~/.ssh/`, ver `ssh.md` |
-| Se revoca | desde GitHub, sin tocar nada local | borrando la línea de `authorized_keys` |
-| Atraviesa firewalls corporativos | sí, es el 443 de siempre | a veces no, el 22 suele estar bloqueado |
-
-Con ssh ya montado desde el 6 de agosto, **SSH es el camino que evita todo esto** — no hay
-token que expire ni que renovar.
-
-## Lo que voy a usar
-
-| Comando | Qué hace |
-|---|---|
-| `git remote -v` | ver a qué URL apunta el remote y por qué protocolo |
-| `git remote set-url origin <url>` | cambiar de HTTPS a SSH, o meter el token |
-| `git config --global credential.helper store` | guardar el token para no volver a teclearlo |
-| `ssh -T git@github.com` | probar que la clave ssh funciona contra GitHub |
-
-## Cómo se rompe
-
-### `403` al hacer push, con las credenciales "correctas"
-
-Es autenticación por contraseña, que ya no existe. El mensaje no dice "usa un token": dice
-403, que suena a permisos.
-
-La confusión está en que **el `git clone` sí funcionó** — leer un repo público no pide
-credenciales. El fallo aparece hasta el primer push, cuando ya llevas trabajo hecho.
-
-### *Developer settings* no está en el repositorio
-
-Están en el menú **global** de la cuenta, no en el repo:
-**foto de perfil → Settings → Developer settings → Personal access tokens**.
-
-Es un menú de cuenta porque el token es de la cuenta, no del repo — aunque un *fine-grained*
-se pueda limitar a un solo repositorio.
-
-### Un token nuevo no puede hacer nada por defecto
-
-Los *fine-grained* nacen sin permisos. Para clonar y empujar código hace falta activar
-explícitamente **Repository permissions → Contents → Read and write**.
-
-"Contents" es el contenido de los archivos, que es donde vive el código. Sin ese permiso el
-push vuelve a dar 403 — el mismo error que estabas tratando de arreglar, y por eso confunde.
-
-### El token es una contraseña
-
-- Va al gestor de credenciales, **nunca al repo**.
-- Si se mete en la URL del remote (`https://TOKEN@github.com/...`), queda visible en
-  `git remote -v` y en `.git/config` — en texto plano.
-- Expira. El push va a volver a fallar el día que caduque, con un error que va a parecer
-  nuevo.
-
-Aplica lo mismo de `ssh.md`: lo que se teclea en la línea de comandos queda en el historial y
-es visible con `ps aux`.
 
 ## Pendientes
 
-- **`git bisect`** — no lo toqué hoy.
-- **Reproducir yo el par `92e51a2` / `4e93186`** con fechas fijas. Lo tengo verificado por fuera, no por mí; hasta que lo corra es un dato prestado.
-- **Romper un rebase a propósito y rescatarlo** con `git reflog` + `git reset --hard`. Lo tengo leído, no corrido — y es justo lo que dice la nota que quita el miedo.
-- **`git mergetool`** — lo salté a propósito en el ejercicio 7 (opcional, necesita configuración). Decidir si lo configuro o lo dejo fuera.
+- ~~**Reproducir yo el par `92e51a2` / `4e93186`** con fechas fijas.~~ **Hecho el 2026-09-03**:
+  reconstruí la topología completa y el hecho se sostiene (mismo árbol `c5672a5`, commits
+  `7f2d5b5` y `a98a46f`). La receta quedó en la sección "No es el mismo commit". Ya no es un
+  dato prestado.
+- **Romper un rebase a propósito y rescatarlo** con `git reflog` + `git reset --hard`. Lo tengo
+  leído, no corrido — y es justo lo que dice la nota que quita el miedo.
+- **`git mergetool`** — lo salté a propósito en el ejercicio 7 (opcional, necesita
+  configuración). Decidir si lo configuro o lo dejo fuera.
 
-- [ ] Cambiar el remote a SSH y comprobar con `ssh -T git@github.com`. La clave ya existe
-      desde el 6 de agosto; solo falta autorizarla en GitHub y hacer `git remote set-url`
-- [ ] Anotar la fecha de expiración del token en algún lado, para que el 403 del futuro no
-      parezca un problema nuevo
+*(`git bisect` salió de esta lista: quedó cubierto en `arqueologia.md` y corrido en
+`solved-bisect.md`, a mano y con `bisect run`.)*
