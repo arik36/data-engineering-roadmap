@@ -126,3 +126,5 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   ---- SQL & PYTHON
 
 - 2026-09-14 . Entorno listo: Los schemas funcionan como espacios de organización dentro de una base: cd.members identifica la tabla members perteneciente al schema cd, mientras que public es el schema predeterminado de PostgreSQL, : el error de CREATE DATABASE ocurrió por falta de CREATEDB, mientras que los warnings de ANALYZE indicaron que mlizz no podía analizar ciertas tablas internas de PostgreSQL, sin impedir que la base se cargara correctamente.
+
+-2026-09-15 . realización de actividades basic 1 - 5 lectura de csv en python scripts
