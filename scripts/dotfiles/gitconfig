@@ -7,7 +7,7 @@
 	graph = log --all --graph --decorate --oneline
 [core]
 	excludesfile = /home/mlizz/.gitignore_global
-	autocrlf = false
+	autocrlf = input
 [init]
 	defaultBranch = main
 [pull]
