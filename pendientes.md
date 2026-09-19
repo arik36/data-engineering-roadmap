@@ -175,3 +175,6 @@
 - [ ] `?` 2026-08-31 — probar cron con la hora a +2 min y ver qué queda en logs/ingesta.log. Los log INFO van a stderr, así que el "log de errores" traerá mensajes de éxito — decidir si eso está bien
 
 - [ ] `!` 2026-08-30 — ingesta.sh no valida el archivo que ya existe. Dos invocaciones con columnas distintas devuelven el mismo archivo y exit 0, aunque una no debería pasar. ¿Validar siempre, o documentar que la política 1 confía en la corrida anterior?
+
+
+----SQL---
