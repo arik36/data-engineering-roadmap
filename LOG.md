@@ -135,3 +135,5 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
 
 -2026-09-18- ejercicios de aggrement 7-12, sumar-grupo.py con salida csv. 
 
+-2026-09-20- ejercicio de logro para semana 1, escrito en sql/ejercicios y python/ejercicios
+
