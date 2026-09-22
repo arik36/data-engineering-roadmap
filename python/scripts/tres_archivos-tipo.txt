@@ -1,0 +1,54 @@
+
+"~/projects/data-engineering-roadmap/data/raw/2026-09-19_vix-daily.csv"
+Forma del DataFrame: (9276, 5)
+Nombres de las columnas: ['DATE', 'OPEN', 'HIGH', 'LOW', 'CLOSE']
+Primeras filas:          DATE   OPEN   HIGH    LOW  CLOSE
+0  1990-01-02  17.24  17.24  17.24  17.24
+1  1990-01-03  18.19  18.19  18.19  18.19
+2  1990-01-04  19.22  19.22  19.22  19.22
+3  1990-01-05  20.11  20.11  20.11  20.11
+4  1990-01-08  20.26  20.26  20.26  20.26
+Tipos de datos: 
+DATE         str
+OPEN     float64
+HIGH     float64
+LOW      float64
+CLOSE    float64
+dtype: object
+
+
+---
+
+"~/projects/data-engineering-roadmap/data/raw/2026-09-19_gdp.csv"
+Forma del DataFrame: (13979, 4)
+Nombres de las columnas: ['Country Name', 'Country Code', 'Year', 'Value']
+Primeras filas:   Country Name Country Code  Year         Value
+0  Afghanistan          AFG  2000  3.521418e+09
+1  Afghanistan          AFG  2001  2.813572e+09
+2  Afghanistan          AFG  2002  3.825701e+09
+3  Afghanistan          AFG  2003  4.520947e+09
+4  Afghanistan          AFG  2004  5.224897e+09
+Tipos de datos: 
+Country Name        str
+Country Code        str
+Year              int64
+Value           float64
+dtype: object
+
+-----
+
+"~/projects/data-engineering-roadmap/data/raw/2026-09-19_epa-sea-level.csv"
+Forma del DataFrame: (144, 5)
+Nombres de las columnas: ['Year', 'CSIRO Adjusted Sea Level', 'Lower Error Bound', 'Upper Error Bound', 'NOAA Adjusted Sea Level']
+Primeras filas:    Year  CSIRO Adjusted Sea Level  Lower Error Bound  Upper Error Bound  NOAA Adjusted Sea Level
+0  1880                  0.000000          -0.952756           0.952756                      NaN
+1  1881                  0.220472          -0.732283           1.173228                      NaN
+2  1882                 -0.440945          -1.346457           0.464567                      NaN
+3  1883                 -0.232283          -1.129921           0.665354                      NaN
+4  1884                  0.590551          -0.283465           1.464567                      NaN
+Tipos de datos: Year                          int64
+CSIRO Adjusted Sea Level    float64
+Lower Error Bound           float64
+Upper Error Bound           float64
+NOAA Adjusted Sea Level     float64
+dtype: object

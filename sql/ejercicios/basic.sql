@@ -166,3 +166,41 @@ HAVING SUM(slots) = (
         GROUP BY facid
     ) AS subq
 );
+
+-- sql and queries
+-- How can you produce a list of the start times for bookings by members named 'David Farrell'?
+SELECT starttime
+FROM cd.bookings
+INNER JOIN cd.members AS mem
+  ON cd.bookings.memid = mem.memid
+WHERE mem.firstname LIKE 'David'
+AND mem.surname LIKE 'Farrell'; 
+
+-- How can you produce a list of the start times for bookings for tennis courts, for the date '2012-09-21'?
+-- Return a list of start time and facility name pairings, ordered by the time.
+SELECT bsk.starttime AS start,facs.name
+FROM cd.bookings bsk
+INNER JOIN cd.facilities AS facs
+   ON bsk.facid = facs.facid
+WHERE (bsk.starttime >= '2012-09-21' AND bsk.starttime < '2012-09-22')
+AND facs.name LIKE 'Tennis Court %'
+ORDER BY bsk.starttime;
+
+-- How can you output a list of all members who have recommended another member? 
+--Ensure that there are no duplicates in the list, and that results are ordered by 
+--(surname, firstname).
+-- Miembros que invitaron a otros miembros
+SELECT DISTINCT recs.firstname, recs.surname
+FROM cd.members AS recs
+INNER JOIN cd.members AS mems 
+  ON recs.memid = mems.recommendedby
+ORDER BY recs.surname, recs.firstname;
+
+--How can you output a list of all members, including the individual who recommended them
+ --(if any)? Ensure that results are ordered by (surname, firstname).
+SELECT recs.firstname AS memsname, recs.surname AS memsname,
+ref.firstname AS refcname, ref.surname AS recsname
+FROM cd.members AS recs
+LEFT JOIN cd.members AS ref
+  ON recs.recommendedby = ref.memid
+ORDER BY recs.surname, recs.firstname;

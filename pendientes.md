@@ -178,3 +178,6 @@
 
 
 ----SQL---
+- [ ] `!` 2026-09-21: qué pasa internamente en un JOIN? porque el JOIN entre las mismas tablas funciona?
+
+- [ ] `!` 2026-09-21: Cuando es necesario hacer una sub query?
