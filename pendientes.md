@@ -181,3 +181,7 @@
 - [ ] `!` 2026-09-21: qué pasa internamente en un JOIN? porque el JOIN entre las mismas tablas funciona?
 
 - [ ] `!` 2026-09-21: Cuando es necesario hacer una sub query?
+
+- [ ] `!` 2026-09-22: Diferencia entre Subquery en el SELECT y Subquery en el FROM (Exterior)
+
+- [ ] `!` 2026-09-22: Revisar las funciones basicas de Pandas y cuando preferir un sitema de ordenamiento con funciones o por definicion: resultado = (...)

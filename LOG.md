@@ -138,3 +138,5 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
 -2026-09-20- ejercicio de logro para semana 1, escrito en sql/ejercicios y python/ejercicios
 
 -2026-09-21- creacion de tareas 1-4 query en basic.sql
+
+-2026-09-21- ejercicios de joins and queries 5-8, creacion de pandas_agrupar.py y conexion a la bd de potsgre en python

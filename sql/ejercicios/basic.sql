@@ -167,7 +167,7 @@ HAVING SUM(slots) = (
     ) AS subq
 );
 
--- sql and queries
+-- sql and queries -----------------------
 -- How can you produce a list of the start times for bookings by members named 'David Farrell'?
 SELECT starttime
 FROM cd.bookings
@@ -204,3 +204,81 @@ FROM cd.members AS recs
 LEFT JOIN cd.members AS ref
   ON recs.recommendedby = ref.memid
 ORDER BY recs.surname, recs.firstname;
+
+--JOINS AND QUERRIES 5-8
+--How can you produce a list of all members who have used a tennis court? 
+--Include in your output the name of the court, and the name of the member
+-- formatted as a single column. Ensure no duplicate data, and order by the
+-- member name followed by the facility name.
+SELECT DISTINCT
+mem.firstname|| ' ' || mem.surname AS member, 
+facs.name AS facility
+FROM cd.facilities facs
+INNER JOIN cd.bookings bks
+   ON facs.facid = bks.facid
+INNER JOIN cd.members mem
+   ON mem.memid = bks.memid
+WHERE facs.name LIKE 'Tennis Court %'
+ORDER BY member;
+
+--How can you produce a list of bookings on the day of 2012-09-14 which 
+--will cost the member (or guest) more than $30? Remember that guests have different costs 
+--to members (the listed costs are per half-hour 'slot'), and the guest user is always ID 0. 
+--Include in your output the name of the facility, the name of the member formatted as a single column, 
+--and the cost. Order by descending cost, and do not use any subqueries.
+SELECT 
+    mem.firstname|| ' ' || mem.surname AS member, 
+    facs.name AS facility,
+    CASE
+        WHEN bks.memid = 0 THEN bks.slots * facs.guestcost
+        ELSE bks.slots * facs.membercost
+    END AS cost
+FROM cd.facilities facs
+INNER JOIN cd.bookings bks
+    ON facs.facid = bks.facid
+INNER JOIN cd.members mem
+    ON mem.memid = bks.memid
+WHERE bks.starttime >= '2012-09-14'
+  AND bks.starttime < '2012-09-15'
+  AND CASE
+        WHEN bks.memid = 0 THEN bks.slots * facs.guestcost
+        ELSE bks.slots * facs.membercost
+      END > 30;
+
+--How can you output a list of all members, including the individual who recommended
+-- them (if any), without using any joins? Ensure that there are no duplicates in the 
+--list, and that each firstname + surname pairing is formatted as a column and ordered.
+SELECT DISTINCT 
+    mems.firstname || ' ' || mems.surname AS member,
+    (
+        SELECT recs.firstname || ' ' || recs.surname
+        FROM cd.members recs
+        WHERE recs.memid = mems.recommendedby
+    ) AS recommender
+FROM cd.members mems
+ORDER BY member;
+
+-- The Produce a list of costly bookings exercise contained some messy logic: 
+--we had to calculate the booking cost in both the WHERE clause and the CASE statement.
+-- Try to simplify this calculation using subqueries. 
+SELECT 
+    mem.firstname || ' ' || mem.surname AS member,
+	facs.name AS facility,
+    CASE
+        WHEN bks.memid = 0 THEN bks.slots * facs.guestcost
+        ELSE bks.slots * facs.membercost
+    END AS cost
+FROM cd.facilities facs
+INNER JOIN cd.bookings bks
+    ON facs.facid = bks.facid
+INNER JOIN cd.members mem
+    ON mem.memid = bks.memid
+WHERE bks.starttime >= '2012-09-14'
+  AND bks.starttime < '2012-09-15'
+  AND (
+      CASE
+          WHEN bks.memid = 0 THEN bks.slots * facs.guestcost
+          ELSE bks.slots * facs.membercost
+      END
+  ) > 30
+ORDER BY cost DESC;
