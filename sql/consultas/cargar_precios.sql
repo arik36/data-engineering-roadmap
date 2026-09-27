@@ -86,3 +86,14 @@ ORDER BY fecha_registro;
  2025-03-13     |          1
  2025-03-14     |          1
 (10 rows)
+
+-- viernes 26 prueba de carga de precios desde el pipeline
+psql -d datos -c "SELECT * FROM resumen ORDER BY valor_promedio DESC LIMIT 5;"
+       country_name        | anios |   valor_promedio   |     valor_max
+---------------------------+-------+--------------------+-------------------
+ World                     |    64 |  33569149056043.62 | 105435039507024.1
+ High income               |    64 | 24569707290805.473 | 67653743404264.14
+ OECD members              |    64 |   23535745547781.5 | 64098865773302.98
+ Post-demographic dividend |    64 |  22386770916368.95 | 59851800976561.17
+ Europe & Central Asia     |    64 | 10351155531311.842 | 27240628835585.28
+(5 rows)

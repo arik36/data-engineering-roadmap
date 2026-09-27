@@ -52,3 +52,22 @@ Lower Error Bound           float64
 Upper Error Bound           float64
 NOAA Adjusted Sea Level     float64
 dtype: object
+
+
+----
+diff <(sort /home/mlizz/projects/data-engineering-roadmap/python/scripts/salidas/e2-pandas_agrupar.csv) <(sort /home/mlizz/projects/data-engineering-roadmap/python/scripts/salidas
+/e2-csv_agrupar.csv)
+1,6c1,6
+< Europe & Central Asia,10351155531311.842,64
+< High income,24569707290805.473,64
+< OECD members,23535745547781.5,64
+< Post-demographic dividend,22386770916368.95,64
+< World,33569149056043.62,64
+< country_name,PromValue,anios
+---
+> Europe & Central Asia,662473954003957.9
+> High income,1572461266611550.2
+> OECD members,1506287715058016.0
+> Post-demographic dividend,1432753338647612.8
+> World,2148425539586791.2
+> ﻿country_name,total_value

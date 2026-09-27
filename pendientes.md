@@ -185,3 +185,7 @@
 - [ ] `!` 2026-09-22: Diferencia entre Subquery en el SELECT y Subquery en el FROM (Exterior)
 
 - [ ] `!` 2026-09-22: Revisar las funciones basicas de Pandas y cuando preferir un sitema de ordenamiento con funciones o por definicion: resultado = (...)
+
+- [ ] `!` 2026-09-24:diferencias entre \copy y COPY
+
+- [ ] `!` 2026-09-25: df.groupby tambien genera tabla por tabla ?

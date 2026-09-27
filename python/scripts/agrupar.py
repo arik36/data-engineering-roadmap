@@ -7,6 +7,7 @@ conteos = {}
 with open(ruta, newline="", encoding="utf-8-sig") as f:
     lector = csv.DictReader(f)
     for fila in lector:
+        #una clave distinta para cada categoría
         clave = fila["categoria"]  
         conteos[clave] = conteos.get(clave, 0) + 1
 

@@ -139,4 +139,8 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
 
 -2026-09-21- creacion de tareas 1-4 query en basic.sql
 
--2026-09-21- ejercicios de joins and queries 5-8, creacion de pandas_agrupar.py y conexion a la bd de potsgre en python
+-2026-09-22- ejercicios de joins and queries 5-8, creacion de pandas_agrupar.py y conexion a la bd de potsgre en python
+
+-2026-09-25- jueves 24 y viernes 26: pipeline.sh, creacion del proceso de un pipeline usando ingesta.sh, transformarv1 y cargar_resumen.sql
+
+-2026-09-26- Creación de notas, revision de logro semana 2

@@ -15,6 +15,11 @@ FROM cd.facilities WHERE membercost > 0;
 SELECT facid, name, membercost, monthlymaintenance
 FROM cd.facilities WHERE membercost > 0 AND membercost < (monthlymaintenance * 0.02);
 
+--otra opción
+SELECT facid, name, membercost, monthlymaintenance 
+FROM cd.facilities
+WHERE membercost > 0 AND membercost < (monthlymaintenance * 1.0 / 50);
+
 --5.- How can you produce a list of all facilities with the word 'Tennis' in their name?
 SELECT *
 FROM cd.facilities WHERE name LIKE '%Tennis%';
@@ -282,3 +287,5 @@ WHERE bks.starttime >= '2012-09-14'
       END
   ) > 30
 ORDER BY cost DESC;
+
+--JOINS AND QUERRIES 9-12
