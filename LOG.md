@@ -127,20 +127,29 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
 
 - 2026-09-14 . Entorno listo: Los schemas funcionan como espacios de organización dentro de una base: cd.members identifica la tabla members perteneciente al schema cd, mientras que public es el schema predeterminado de PostgreSQL, : el error de CREATE DATABASE ocurrió por falta de CREATEDB, mientras que los warnings de ANALYZE indicaron que mlizz no podía analizar ciertas tablas internas de PostgreSQL, sin impedir que la base se cargara correctamente.
 
--2026-09-15 . realización de actividades basic 1 - 5 lectura de csv en python scripts
+- 2026-09-15 . realización de actividades basic 1 - 5 lectura de csv en python scripts
 
--2026-09-16 - realizacion de actividades basic 6-12 
+- 2026-09-16 - realizacion de actividades basic 6-12 
 
--2026-09-17- agregacion de nuestra propia tabla sql partiendo de un csv y filtrado, ejercicios de aggrement 1-6,sumar-grupo.py
+- 2026-09-17- agregacion de nuestra propia tabla sql partiendo de un csv y filtrado, ejercicios de aggrement 1-6,sumar-grupo.py
 
--2026-09-18- ejercicios de aggrement 7-12, sumar-grupo.py con salida csv. 
+- 2026-09-18- ejercicios de aggrement 7-12, sumar-grupo.py con salida csv. 
 
--2026-09-20- ejercicio de logro para semana 1, escrito en sql/ejercicios y python/ejercicios
+- 2026-09-20- ejercicio de logro para semana 1, escrito en sql/ejercicios y python/ejercicios
 
--2026-09-21- creacion de tareas 1-4 query en basic.sql
+- 2026-09-21- creacion de tareas 1-4 query en basic.sql
 
--2026-09-22- ejercicios de joins and queries 5-8, creacion de pandas_agrupar.py y conexion a la bd de potsgre en python
+- 2026-09-22- ejercicios de joins and queries 5-8, creacion de pandas_agrupar.py y conexion a la bd de potsgre en python
 
--2026-09-25- jueves 24 y viernes 26: pipeline.sh, creacion del proceso de un pipeline usando ingesta.sh, transformarv1 y cargar_resumen.sql
+- 2026-09-25- jueves 24 y viernes 26: pipeline.sh, creacion del proceso de un pipeline usando ingesta.sh, transformarv1 y cargar_resumen.sql
 
--2026-09-26- Creación de notas, revision de logro semana 2
+- 2026-09-26- Creación de notas, revision de logro semana 2
+
+- 2026-09-28 · CTEs: tres consultas reescritas con WITH, mismo resultado verificado.
+  transformar.py partido en leer/transformar/escribir con if __name__ == "__main__" ·
+  <-los .venv cambian segun el entorno en el que te encuentres
+  - groupby() solo → objeto de agrupación.
+  - groupby() + operación (sum, agg, etc.) → resultado.
+    Si el resultado es Series (una fila y un indice) + reset_index() → DataFrame.> · 
+    
+  

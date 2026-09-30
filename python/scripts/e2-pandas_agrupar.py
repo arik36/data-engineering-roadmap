@@ -23,9 +23,13 @@ resultado = (
 # al hacer el groupby, el índice del dataframe resultante es la columna por la que se agrupó. 
 # Para guardar en un CSV sin índice, se puede usar reset_index() o index=False en to_csv()
 resultadoV2 = df.groupby("country_name")["value"].sum().reset_index()
+resultadov3 = df.groupby("country_name")
+
+print(resultado)
+print("--------------------------------")
+print(resultadoV2)
+print("--------------------------------")
+print(resultadov3)
 
 ruta="~/projects/data-engineering-roadmap/python/scripts/salidas/e2-pandas_agrupar.csv"
 resultado.to_csv(ruta, index=False)
-
-print(resultado)
-print(resultadoV2)

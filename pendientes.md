@@ -189,3 +189,9 @@
 - [ ] `!` 2026-09-24:diferencias entre \copy y COPY
 
 - [ ] `!` 2026-09-25: df.groupby tambien genera tabla por tabla ?
+
+- [ ] `!` 2026-09-29:- cuando es que realmente GROUP BY aporta una nueva división de los grupos.
+
+- [ ] `!` 2026-09-29:- - Qué hace exactamente cada operación de una cadena, cuando estamos generando un DataFrame, un DataFrameGroupBy, un SeriesGroupBy o un Series
+
+- [ ] `!` 2026-09-29:- Subqueries vs CTEs vs GROUP BY:¿Cuándo necesito transformar primero los datos y cuándo puedo hacerlo directamente?
