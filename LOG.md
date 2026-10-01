@@ -152,4 +152,7 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   - groupby() + operación (sum, agg, etc.) → resultado.
     Si el resultado es Series (una fila y un indice) + reset_index() → DataFrame.> · 
     
-  
+  - 2026-09-29 · Window functions: OVER (PARTITION BY) no colapsa filas, GROUP BY sí.
+  ROW_NUMBER/RANK/DENSE_RANK y el patrón "top N por grupo", que obliga a CTE porque
+  el WHERE corre antes que el SELECT. argparse en transformar.py: --help y exit 2
+  gratis · <hallazgos> · <pendiente>

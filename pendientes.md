@@ -195,3 +195,5 @@
 - [ ] `!` 2026-09-29:- - Qué hace exactamente cada operación de una cadena, cuando estamos generando un DataFrame, un DataFrameGroupBy, un SeriesGroupBy o un Series
 
 - [ ] `!` 2026-09-29:- Subqueries vs CTEs vs GROUP BY:¿Cuándo necesito transformar primero los datos y cuándo puedo hacerlo directamente?
+
+- [ ] `!` 2026-09-30:- aprender mas de argparse
