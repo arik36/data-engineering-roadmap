@@ -156,3 +156,12 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   ROW_NUMBER/RANK/DENSE_RANK y el patrón "top N por grupo", que obliga a CTE porque
   el WHERE corre antes que el SELECT. argparse en transformar.py: --help y exit 2
   gratis · <hallazgos> · <pendiente>
+
+  - 2026-09-30 · LAG/LEAD y totales acumulados; el ORDER BY dentro del OVER cambia el
+  significado de SUM. Aggregates 15-18. try/except en transformar.py con un except por
+  modo de falla, stderr y sys.exit — el mismo esquema que ingesta.sh · <hallazgos>
+
+  - 2026-10-01 · NULL no es un valor: nada se compara con él y da true, ni otro NULL.
+  COALESCE, CASE, y COUNT(*) vs COUNT(columna) para contar nulos. transformar.py
+  terminado: argparse, tres funciones, try/except, cuatro códigos de salida, cuatro
+  casos verificados · <hallazgos>

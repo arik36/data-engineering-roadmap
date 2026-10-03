@@ -287,5 +287,3 @@ WHERE bks.starttime >= '2012-09-14'
       END
   ) > 30
 ORDER BY cost DESC;
-
---JOINS AND QUERRIES 9-12
