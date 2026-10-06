@@ -165,3 +165,16 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   COALESCE, CASE, y COUNT(*) vs COUNT(columna) para contar nulos. transformar.py
   terminado: argparse, tres funciones, try/except, cuatro códigos de salida, cuatro
   casos verificados · <hallazgos>
+
+  - 2026-10-02 · INSERT/UPDATE/DELETE, los 9 de Modifying data. BEGIN/ROLLBACK como red:
+  un DELETE revertido y conteo verificado. El hábito: correr el WHERE como SELECT antes.
+  transformar.py contra los tres CSV — falla con dos, exit 4, por esquema distinto.
+  Decisión sobre cómo generalizar: <la tuya> · <hallazgos>
+
+  - 2026-10-03 · Prueba de logro semana 3: <N> de 4. <probado todo menos el ejercicio de python>.
+  Poda: <X> entradas nuevas, <Y> siguen abiertas. <N> vacantes · cierra semana 3
+
+  - 2026-10-05 · Hechos y dimensiones: gdp partida en dim_pais + hechos_gdp, JOIN
+  reconstruye el original con el mismo conteo. pd.merge con how= igual que los JOIN de
+  SQL; comprobar len() antes y después porque un merge puede multiplicar filas sin
+  avisar · <hallazgos>
