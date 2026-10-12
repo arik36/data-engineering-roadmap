@@ -178,3 +178,26 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   reconstruye el original con el mismo conteo. pd.merge con how= igual que los JOIN de
   SQL; comprobar len() antes y después porque un merge puede multiplicar filas sin
   avisar · <hallazgos>
+
+  - 2026-10-06 · EXTRACT y DATE_TRUNC; Date 1-3. Tabla vix cargada, promedio anual de
+  close. En pandas: to_datetime antes de usar .dt, y errors="coerce" mete NaN en
+  silencio — contar isna() después. SQL y pandas dan lo mismo: <sí/no> · <hallazgos>
+  
+  - 2026-10-07 · Tabla sea_level cargada. JOIN de tres fuentes por año con LEFT a
+  propósito: los NULL muestran el solapamiento real. Sumar PIB por año sí significa
+  (PIB mundial); por país a lo largo de años, no. Lo mismo con dos merge encadenados;
+  SQL y pandas coinciden: <sí/no, y por qué> · <hallazgos>
+
+  - 2026-10-08 · hechos_anual materializada con CREATE TABLE AS + DROP IF EXISTS.
+  Criterio SQL vs pandas: filtrar y agregar lo más cerca del origen (predicate
+  pushdown). unir_fuentes.py v2 delega la agregación a SQL: pasa de <N> a <M> filas
+  traídas · <hallazgos>
+
+  - 2026-10-09 · pipeline.sh completo: tres ingestas, tres cargas, tabla de hechos y
+  verificación, en un comando. Idempotencia con <TRUNCATE / DROP+CREATE> porque
+  <razón>. Dos corridas seguidas: mismo conteo. shellcheck limpio · <hallazgos>
+
+  - 2026-10-10 · Prueba de logro semana 4: <N> de 6. Retrospectiva del mes:
+  <sesiones completadas>/24, <dudas> entradas y <N> siguen importando, <N> veces que
+  probé el camino viejo (agosto fueron 4). Lo que puedo hacer hoy y no el 13-09:
+  <tu respuesta> · cierra la primera mitad de la Fase 1

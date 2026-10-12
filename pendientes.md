@@ -197,3 +197,7 @@
 - [ ] `!` 2026-09-29:- Subqueries vs CTEs vs GROUP BY:¿Cuándo necesito transformar primero los datos y cuándo puedo hacerlo directamente?
 
 - [ ] `!` 2026-09-30:- aprender mas de argparse
+
+- [ ] `!` 2026-10-09:- porque poner el reset_index() despues de rename(columns...) puede generar un error
+
+- [ ] `!` 2026-10-09:- cuando usar with, windows function o subquerys

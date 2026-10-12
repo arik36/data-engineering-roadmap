@@ -12,7 +12,7 @@ ORDER BY PromValue DESC
 LIMIT 5;
 
 
--- SEMANA 3 .- 38 sept A 03 oct 2026
+-- SEMANA 3 .- 28 sept A 03 oct 2026
 -- a) Usando WITH y ROW_NUMBER: el año de mayor PIB de cada país,
 -- mostrando país, año y valor. (Patrón "top N por grupo".)
  WITH registro_max_pais AS (
@@ -62,3 +62,60 @@ FROM gdp;
 --forma 3: count sobre columna y restar el total de filas. (No es la más eficiente, pero es otra forma de hacerlo.)
 SELECT (COUNT(*) - COUNT(value)) AS null_count
 FROM gdp;
+
+-- SEMANA 4 .- 04 oct A 11 oct 2026
+--a) Una CTE que calcule el PIB mundial por año y otra el VIX promedio por año, 
+--unidas con LEFT JOIN, ordenadas por año.
+WITH pib_anual AS (
+    SELECT year AS anio, SUM(value) AS pib_mundial
+    FROM gdp 
+    GROUP BY year
+),
+vix_anual AS (
+    SELECT EXTRACT (YEAR FROM fecha)::INT AS anio, AVG(close) AS vix_promedio   
+    FROM vix
+    GROUP BY 1
+)
+SELECT 
+    p.anio, 
+    p.pib_mundial, 
+    v.vix_promedio
+FROM pib_anual p
+LEFT JOIN vix_anual v ON p.anio = v.anio
+ORDER BY p.anio;
+
+--b) El año de mayor PIB mundial, usando ROW_NUMBER.
+WITH anios_agrupados AS(
+    SELECT year, sum(value) AS total
+	FROM gdp
+    GROUP BY year
+), 
+ranking_pib AS(
+    SELECT year, total,
+    ROW_NUMBER() OVER (ORDER BY total DESC) AS rank
+    FROM anios_agrupados
+)
+SELECT year, total
+FROM ranking_pib
+WHERE rank = 1;
+
+
+--c) Un DELETE con BEGIN/ROLLBACK sobre hechos_anual, verificando el conteo antes y después.
+--primero contamos todos los registros de la tabla hechos_anual
+SELECT COUNT(*) AS total_registros
+FROM hechos_anual;
+--64
+
+BEGIN;
+DELETE FROM hechos_anual
+WHERE nivel_mar IS NULL
+OR vix_promedio IS NULL;
+
+SELECT COUNT(*) AS total_registros
+FROM hechos_anual;
+--24
+
+ROLLBACK;
+--64
+
+

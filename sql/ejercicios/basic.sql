@@ -341,3 +341,24 @@ WHERE memid IN (SELECT mem.memid
 	   LEFT JOIN cd.bookings boo
 	   ON mem.memid = boo.memid
 	   WHERE boo.memid IS NULL);
+
+--OPR DATA
+--Produce a timestamp for 1 a.m. on the 31st of August 2012.
+SELECT make_timestamp(2012, 08, 31, 01, 00, 00);   
+
+--Find the result of subtracting the timestamp '2012-07-30 01:00:00' 
+--from the timestamp '2012-08-31 01:00:00'
+SELECT 
+    '2012-08-31 01:00:00'::timestamp
+    - 
+    '2012-07-30 01:00:00'::timestamp
+AS interval;
+
+--Produce a list of all the dates in October 2012. They can be output as a 
+--timestamp (with time set to midnight) or a date.
+
+SELECT generate_series(
+    '2012-10-01'::date,
+    '2012-10-31'::date,
+    '1 day'::interval
+) AS date;
