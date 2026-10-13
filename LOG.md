@@ -201,3 +201,29 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
   <sesiones completadas>/24, <dudas> entradas y <N> siguen importando, <N> veces que
   probé el camino viejo (agosto fueron 4). Lo que puedo hacer hoy y no el 13-09:
   <tu respuesta> · cierra la primera mitad de la Fase 1
+
+  -2026-10-12--
+  # Balance de la Sesión
+
+## 1. Qué produje
+- **Un mapa mental sólido sobre restricciones SQL:** Comprendila diferencia entre restricciones de columna y de tabla, cómo operan las llaves primarias compuestas (vitales para series temporales como el PIB o el índice VIX), y qué es un índice B-tree por debajo del capó.
+- **Dominio práctico del módulo `json` en Python:** Diseñe el flujo completo de serialización y deserialización, entendiendo la matriz de las cuatro funciones (`dump`, `dumps`, `load`, `loads`).
+- **Código funcional de ingeniería de datos:** 
+  - Escribí scripts para transformar archivos CSV en JSON mediante Pandas.
+  - Construi un script de prueba (`ejemplo_json.py`) capaz de leer un JSON anidado, aislar listas paralelas, usar el truco de `zip()` para unirlas y reconstruirlas en un DataFrame de Pandas limpio.
+- **Depuración de errores reales:** Solucione un par de tropiezos comunes en la terminal: el `FileNotFoundError` por la ubicación de referencia en las rutas relativas y el `TypeError` causado por desalineaciones entre `orient="records"` y la lectura por claves de diccionario.
+
+---
+
+## 2. Qué descubrí que no esperaba
+- **La paradoja del `NULL` con `NULLS NOT DISTINCT`:** Descubris que el `NULL` en SQL no siempre es un espacio vacío infinito. Al usar esta cláusula, el `NULL` se trata como un valor real y estricto, obligando a que solo se permita un único registro nulo en toda la columna.
+- **La trampa del formato en JSON (`orient`):** Entendi por qué exportar un DataFrame con `orient="records"` genera una lista de diccionarios (filas) y por qué intentar llamarlo con `contenido["DATE"]` rompía el programa con un error de tipos, aprendiendo a distinguirlo del formato por listas paralelas.
+- **Detalles ocultos de Pandas:** Descubri una limitación técnica inesperada: a diferencia de `read_csv()`, el método `.to_json()` de Pandas no acepta el parámetro `encoding` cuando escribes directo a un archivo en disco.
+- **Por qué JSON odia las llamadas múltiples (`dump` repetidos):** Comprendi que JSON carece de un sistema de "marcos" (framing), lo que explica por qué hacer varios `dump()` consecutivos sobre un mismo archivo rompe por completo la sintaxis del documento.
+
+---
+
+## 3. Qué quedó sin hacer
+- **Los ganchos o hooks avanzados (`object_hook` y `default`):** Aunque los mencionamos y explicamos conceptualmente, nos faltó ponerlos en práctica para aprender a serializar y deserializar clases o tipos de datos personalizados de Python.
+- **Integridad referencial avanzada:** Conectar nuestras tablas del mundo real (como `sea_level`, `vix` o `gdp`) mediante llaves foráneas (`FOREIGN KEY`) apoyadas en claves primarias compuestas.
+- **Análisis directo de APIs anidadas complejas:** Profundizar en JSONs que tienen múltiples niveles de anidación (diccionarios dentro de listas dentro de diccionarios) utilizando técnicas de aplanamiento más avanzadas.
