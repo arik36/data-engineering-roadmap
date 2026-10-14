@@ -227,3 +227,41 @@ Poda de pendientes: 34 entradas desde el 01-08 → queda 1 duda real (wait $! so
 - **Los ganchos o hooks avanzados (`object_hook` y `default`):** Aunque los mencionamos y explicamos conceptualmente, nos faltó ponerlos en práctica para aprender a serializar y deserializar clases o tipos de datos personalizados de Python.
 - **Integridad referencial avanzada:** Conectar nuestras tablas del mundo real (como `sea_level`, `vix` o `gdp`) mediante llaves foráneas (`FOREIGN KEY`) apoyadas en claves primarias compuestas.
 - **Análisis directo de APIs anidadas complejas:** Profundizar en JSONs que tienen múltiples niveles de anidación (diccionarios dentro de listas dentro de diccionarios) utilizando técnicas de aplanamiento más avanzadas.
+
+---
+date: 2026-10-13
+---
+
+# Balance de la Sesión
+
+---
+
+## 1. Qué produje
+
+* Un script ejecutable en Python (`scripts/clima.py`) que consume la API histórica de Open-Meteo usando peticiones `HTTP GET` con `requests`.
+* Procesamiento de argumentos desde la línea de comandos mediante `argparse` para recibir parámetros de fechas (`--start_date` y `--end_date`).
+* Deserialización de respuestas JSON utilizando `json.loads(response.text)` para transformar los datos extraídos en un `pandas.DataFrame`.
+* Exportación de los datos a formato CSV en disco y salida limpia por `stdout` mostrando únicamente la ruta del archivo generado.
+* Control de flujo de errores con bloques `try/except` específicos (`HTTPError`, `ConnectionError`, `Timeout`) y manejo de códigos de salida (`sys.exit`) redirigiendo los mensajes de error a `sys.stderr`.
+
+---
+
+## 2. Qué descubrí que no esperaba
+
+* Que la librería `requests` no lanza automáticamente una excepción cuando la API regresa un código de error HTTP (como `400 Bad Request` por fechas futuras o inválidas), sino que requiere llamar explícitamente a `response.raise_for_status()` para capturarlo.
+* La diferencia estructural entre un JSON formateado como **diccionario de listas** (como el que entrega Open-Meteo) y cómo `pandas` lo convierte directamente a `DataFrame` sin necesidad de aplanar filas manualmente.
+* La importancia de separar los flujos de salida: mandar los logs/errores a `sys.stderr` evita contaminar `stdout`, permitiendo que el script se integre de forma limpia en pipelines automatizados de Bash/ETL.
+
+---
+
+## 3. Qué quedó sin hacer
+
+**Diferencia estructural entre diccionarios de listas vs. listas de diccionarios:**
+
+* **Qué te faltó:** Profundizar en cómo reacciona Pandas ante distintos formatos JSON.
+* **Por qué importa:** Open-Meteo devuelve un diccionario cuyas claves tienen listas adentro (`{"time": [...], "temp": [...]}`), lo cual se pasa directo a `pd.DataFrame()`. Sin embargo, la gran mayoría de las APIs en el mundo real devuelven listas de diccionarios (donde cada elemento de la lista es un objeto/fila independiente, como `[{"time": "...", "temp": 25}, {...}]`), o JSONs con anidaciones profundas que requieren herramientas como `pd.json_normalize()`. Dominar estas diferencias te ahorrará muchos dolores de cabeza al parsear datos de distintas fuentes.
+
+**Manejo avanzado de errores y robustez en pipelines (ETL):**
+
+* **Qué te faltó:** Ir más allá de un try-except general con `Exception`.
+* **Por qué importa:** En la automatización de datos, un script puede fallar por muchas razones específicas: que la API responda con un error 404 o 500, que la red falle intermitentemente (lo cual requiere reintentos o retries), o que la estructura del JSON cambie y falle por un `KeyError`. Aprender a capturar excepciones específicas y validar que los datos no vengan vacíos antes de meterlos al DataFrame es clave para construir pipelines profesionales y resilientes.
