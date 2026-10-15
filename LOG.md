@@ -265,3 +265,37 @@ date: 2026-10-13
 
 * **Qué te faltó:** Ir más allá de un try-except general con `Exception`.
 * **Por qué importa:** En la automatización de datos, un script puede fallar por muchas razones específicas: que la API responda con un error 404 o 500, que la red falle intermitentemente (lo cual requiere reintentos o retries), o que la estructura del JSON cambie y falle por un `KeyError`. Aprender a capturar excepciones específicas y validar que los datos no vengan vacíos antes de meterlos al DataFrame es clave para construir pipelines profesionales y resilientes.
+
+---
+date 2026-10-14
+# Resumen de Sesión: Pandas, Geometría Tabular y `json_normalize`
+
+## 1.- Qué produce hoy
+* Comprendimos la geometría tabular y los ejes geométricos en Pandas (`axis=0` para filas y `axis=1` para columnas).
+* Analizamos y predichimos las seis combinaciones nativas de contenedores (listas y diccionarios) en `pd.DataFrame`.
+* Descubrimos por qué un diccionario de escalares falla debido a la falta de un eje vertical que defina las filas.
+* Identificamos cómo Pandas mapea diccionarios de diccionarios simétricos directos en matrices de dos dimensiones.
+* Examinamos un archivo JSON real de repositorios de GitHub con estructuras y diccionarios anidados.
+* Comprobamos la diferencia de columnas entre un DataFrame tradicional (que atrapa objetos) y `json_normalize`.
+* Demostramos cómo los diccionarios internos complejos quedan confinados dentro de las celdas de un DataFrame común.
+* Entendimos cómo resolver el desajuste de longitudes usando los parámetros `record_path` y `meta`.
+
+## 2.- Qué descubrí
+* Que `pd.DataFrame()` **no es recursivo**: solo procesa el nivel raíz y encierra los sub-diccionarios dentro de las celdas.
+* Que el contenedor externo (si es una `lista` o un `diccionario`) define por completo las reglas de juego de Pandas.
+* Que el diccionario de diccionarios no realiza una búsqueda recursiva, sino un mapeo plano estricto de dos niveles.
+* Que `json_normalize` es indispensable cuando las estructuras asimétricas o listas anidadas rompen la geometría tabular.
+* Que el choque de dimensiones de filas no siempre detiene la ejecución con error, pero deja los datos analíticamente inutilizables.
+* Que `json_normalize` previene colisiones de nombres duplicados utilizando prefijos automáticos con puntos.
+* Que una estructura de datos tabular exige una rigurosa consistencia geométrica de filas y columnas rectangulares.
+* Que la función `.to_json()` es solo de salida y no ayuda a desanidar esquemas complejos de entrada.
+
+## 3.- Qué quedó sin hacer o falta estudiar más
+* Explorar a fondo el uso de los parámetros avanzados `meta_prefix` y `record_prefix` en `json_normalize`.
+* Practicar con archivos JSON profundamente anidados que posean más de tres o cuatro niveles de jerarquía.
+* Estudiar el manejo de excepciones y el parámetro `errors='raise'` o `ignore` al enfrentar datos ruidosos o incompletos.
+* Analizar el impacto en rendimiento computacional y memoria al procesar JSONs masivos con `json_normalize`.
+* Profundizar en `json_normalize` implementando múltiples rutas de registro (`record_path`) combinadas.
+* Integrar la normalización de JSONs complejos dentro de flujos de trabajo con bases de datos relacionales.
+* Investigar alternativas de alto rendimiento como Polars para el *parsing* y aplanamiento de datos semiestructurados.
+* Diseñar un pipeline completo de ingeniería de datos que consuma, limpie y almacene una API JSON real.

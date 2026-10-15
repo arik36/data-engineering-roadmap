@@ -26,6 +26,7 @@ def error (mensaje, error):
     print(f"Error: {mensaje}", file=sys.stderr)
     sys.exit(error)
 
+#esto es un get los datos que queremos obtener estan en la url
 url= f"https://archive-api.open-meteo.com/v1/archive?latitude=21.12&longitude=-101.68&start_date={fecha_in}&end_date={fecha_out}&daily=temperature_2m_max,temperature_2m_min"
 
 try:
