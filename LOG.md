@@ -299,3 +299,26 @@ date 2026-10-14
 * Integrar la normalización de JSONs complejos dentro de flujos de trabajo con bases de datos relacionales.
 * Investigar alternativas de alto rendimiento como Polars para el *parsing* y aplanamiento de datos semiestructurados.
 * Diseñar un pipeline completo de ingeniería de datos que consuma, limpie y almacene una API JSON real.
+
+------
+date 2026-10-15
+## Lo que produje hoy
+* Un script completo de PostgreSQL aplicando el patrón de staging para tres datasets clave (VIX, GDP y Sea Level).
+* La implementación robusta de cargas masivas usando tablas temporales (`TEMP TABLE`) e instrucciones `\copy`.
+* La lógica avanzada de upserts combinando `ON CONFLICT DO NOTHING` y `DO UPDATE` condicional.
+* La optimización del conflicto en GDP utilizando el operador `IS DISTINCT FROM` para evitar actualizaciones falsas.
+* Una estructura transaccional segura con control de errores, manejo de abortos y cierre con `COMMIT`.
+
+## Lo que descubrí
+* Que `RETURNING 1` en PostgreSQL solo emite un valor por las filas que realmente logran insertarse o actualizarse.
+* Que las tablas temporales de staging no deben heredar llaves primarias para permitir la carga cruda del CSV.
+* Que la cláusula `DO UPDATE` a secas reescribiría registros idénticos alterando falsamente las métricas del pipeline.
+* El uso fundamental de `IS DISTINCT FROM` para garantizar que la idempotencia solo cuente cambios reales en los datos.
+* Cómo una transacción abortada (`datos=!>`) requiere un `ROLLBACK` obligatorio antes de reintentar comandos.
+
+## Lo que se quedó sin hacer o falta estudiar más
+* Automatizar la ejecución de este bloque SQL mediante un script de Python utilizando conectores de base de datos.
+* Diseñar un mecanismo de logging que capture formalmente los conteos devueltos por el pipeline para auditoría.
+* Investigar estrategias de reintentos (`retries`) y retroceso exponencial ante fallos transitorios de infraestructura.
+* Configurar la programación automática de este flujo de ingeniería de datos utilizando Linux `cron`.
+* Profundizar en el manejo de esquemas y control de concurrencia para procesos ETL en entornos productivos.

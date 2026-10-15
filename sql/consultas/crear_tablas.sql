@@ -33,8 +33,8 @@ CREATE TABLE vix (
 --ahora haremos un \copy para cada tabla, para cargar los datos desde los archivos CSV.
 -- ELT - LOAD --
 --psql -d datos -c "\copy gdp FROM 'data/raw/2026-10-11_gdp.csv' WITH (FORMAT csv, HEADER true)"
---psql -d datos -c "\copy vix FROM 'data/raw/2026-10-11_vix-daily.csv' WITH (FORMAT csv, HEADER true)"
---psql -d datos -c "\copy sea_level FROM 'data/raw/2026-10-11_epa-sea-level.csv' WITH (FORMAT csv, HEADER true)"
+\copy sea_level FROM 'data/raw/2026-10-11_epa-sea-level.csv' WITH (FORMAT csv, HEADER true)--psql -d datos -c "\copy vix FROM 'data/raw/2026-10-11_vix-daily.csv' WITH (FORMAT csv, HEADER true)"
+--psql -d datos -c ""
 
 --  DML --
 -- 3. construir la tabla de hechos
