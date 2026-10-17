@@ -322,3 +322,28 @@ date 2026-10-15
 * Investigar estrategias de reintentos (`retries`) y retroceso exponencial ante fallos transitorios de infraestructura.
 * Configurar la programación automática de este flujo de ingeniería de datos utilizando Linux `cron`.
 * Profundizar en el manejo de esquemas y control de concurrencia para procesos ETL en entornos productivos.
+
+date 2026-10-16
+# Resumen de Sesión: Pipeline Incremental, Staging tables y Macros de `psql`
+
+## 1.- Qué produje hoy
+* Construimos y depuramos la versión incremental del pipeline bash (`pipelinev3.sh`) con manejo de logs dinámicos hacia `stderr`.
+* Diseñamos e implementamos los scripts SQL desacoplados (`gdp.sql`, `vix.sql` y `sea.sql`) para orquestar la carga vía `psql`.
+* Implementamos tablas temporales de staging (`LIKE ... INCLUDING DEFAULTS`) para aislar la ingesta de datos crudos antes de enviarlos a producción.
+* Configuramos el mapeo explícito de columnas de esquemas asimétricos entre CSVs externos y la base de datos PostgreSQL.
+* Integramos la lógica de idempotencia usando `ON CONFLICT ... DO UPDATE` (para GDP) y `DO NOTHING` (para VIX y Sea Level).
+* Aplicamos CTEs con `RETURNING 1` para contar exactamente cuántas filas resultaron efectivamente insertadas o modificadas en las tablas productivas.
+* Calculamos dinámicamente la ruta raíz del repositorio con `RAIZ="$(cd "$(dirname "$0")/.." && pwd)"` para permitir la ejecución autónoma desde cualquier directorio.
+
+## 2.- Qué descubrí
+* Que la substitución de comandos `$( ... )` en Bash puede contaminarse si la rutina de ingesta imprime logs informativos hacia `stdout` en vez de `stderr`.
+* Que ejecutar scripts de Bash (`.sh`) con el ejecutable de Python resulta en `SyntaxError` por no reconocer directivas de terminal como `set -euo pipefail`.
+* Que llamar múltiples veces a `psql -c` abre sesiones de base de datos independientes, impidiendo mantener transacciones abiertas mediante `BEGIN` entre comandos distintos.
+* Que los metacomandos de `psql` (como `\copy`) son procesados por el cliente y no por el motor SQL, por lo que no aceptan paso directo de variables sin técnicas de escape.
+* Que se pueden construir macros dinámicas en `psql` concatenando texto y variables con `\set`.
+* Que la doble barra invertida (`\\copy`) es necesaria para escapar el carácter de control al asignar comandos de terminal dentro de una variable de `psql`.
+
+## 3.- Qué quedó sin hacer o falta estudiar más
+* Repasar a fondo el funcionamiento de `\set` en `psql`, el encadenamiento de comillas simples (`' ' ' ' ' '`) y el comportamiento de escape con comillas dobles `:'variable'`.
+* Probar la ejecución completa de punta a punta (*end-to-end*) asegurando que una segunda ejecución consecutiva devuelva 0 filas modificadas (verificación final de idempotencia).
+* Validar la ejecución del pipeline desde un directorio externo o tarea programada mediante `cron`.
