@@ -65,7 +65,7 @@ except requests.exceptions.Timeout:
 except requests.exceptions.ConnectionError:
   error(
       f"Error: No se pudo conectar al servidor. Revisa tu conexión a internet.",
-      2,
+      2
   )
 
 except requests.exceptions.RequestException as e:
