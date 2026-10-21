@@ -323,6 +323,7 @@ date 2026-10-15
 * Configurar la programación automática de este flujo de ingeniería de datos utilizando Linux `cron`.
 * Profundizar en el manejo de esquemas y control de concurrencia para procesos ETL en entornos productivos.
 
+--------------
 date 2026-10-16
 # Resumen de Sesión: Pipeline Incremental, Staging tables y Macros de `psql`
 
@@ -347,3 +348,41 @@ date 2026-10-16
 * Repasar a fondo el funcionamiento de `\set` en `psql`, el encadenamiento de comillas simples (`' ' ' ' ' '`) y el comportamiento de escape con comillas dobles `:'variable'`.
 * Probar la ejecución completa de punta a punta (*end-to-end*) asegurando que una segunda ejecución consecutiva devuelva 0 filas modificadas (verificación final de idempotencia).
 * Validar la ejecución del pipeline desde un directorio externo o tarea programada mediante `cron`.
+
+-----------------
+date 2026-10-19
+## 1.- Qué produje hoy
+- Ejecutamos y analizamos planes de ejecución utilizando `EXPLAIN` y `EXPLAIN ANALYZE` sobre cuatro tipos clave de consultas: búsqueda por clave primaria, columna sin índice, operaciones `JOIN` y agregaciones.
+- Consolidamos las mediciones base de los escaneos (`Seq Scan` vs. `Index Scan`) y sus tiempos reales, documentándolas en `sql/consultas/explain.sql`.
+- Refactorizamos y unificamos la estructura interna de los scripts de Python (`clima.py`, `transformar.py` y `unir_fuentes.py`), estableciendo un contrato común (función `error()`, mismas funciones estructuradas, manejo estandarizado de `stdout` y tabla de códigos documentada en el `epilog`) para prepararlos de cara a las pruebas unitarias.
+
+## 2.- Qué descubrí
+- Que `EXPLAIN` muestra únicamente la estimación del planificador de PostgreSQL basada en estadísticas, mientras que `EXPLAIN ANALYZE` ejecuta la consulta de verdad y mide los tiempos reales en milisegundos.
+- Que usar `EXPLAIN ANALYZE` con comandos de modificación de datos (`INSERT`, `DELETE`) ejecuta físicamente la operación, por lo que es obligatorio envolverlos en transacciones con `BEGIN` y `ROLLBACK` para evitar alteraciones indeseadas.
+- Que identificar un `Seq Scan` (barrido de tabla completa fila por fila) frente a un `Index Scan` (acceso directo mediante índice) permite diagnosticar con precisión el rendimiento de las consultas y la necesidad de índices.
+- Que estandarizar la arquitectura y los contratos de entrada/salida en múltiples scripts de Python reduce drásticamente la complejidad al momento de escribir pruebas automatizadas al día siguiente.
+
+## 3.- Qué quedó sin hacer o falta estudiar más
+- Profundizar en el análisis de los costos estimados del optimizador (`cost=...`) antes de ejecutar el análisis real.
+- Escribir las pruebas automatizadas utilizando la nueva estructura unificada de los scripts de Python.
+
+-----------------
+date 2026-10-20
+
+## 1.- Qué produje hoy
+- Analizamos y depuramos scripts en R para el cálculo del coeficiente de correlación (`cor.test`) y modelos de regresión lineal simple (`lm`), corrigiendo el manejo de la función `predict()` al estructurar correctamente el `newdata` con los nombres de variables exactos[cite: 1].
+- Diseñamos la lógica en R para reclasificar y analizar frecuencias por sectores de propietarios (Gobierno, Estatal, Privado) utilizando `dplyr` y visualizaciones con `ggplot2`[cite: 2].
+- Profundizamos en la arquitectura interna de PostgreSQL, desglosando el funcionamiento de los índices (como el creado automáticamente por una `PRIMARY KEY`) y su impacto en el rendimiento.
+- Interpretamos a fondo los diferentes planes de ejecución mediante `EXPLAIN` y `EXPLAIN ANALYZE`, diferenciando el comportamiento de los motores de lectura y ordenamiento.
+
+## 2.- Qué descubrí
+- Que al usar `predict(modelo, newdata = ...)` en R, si los nombres de las columnas del nuevo marco de datos no coinciden exactamente con los de la fórmula original, R interpreta erróneamente el argumento y genera predicciones para todo el conjunto de datos inicial en lugar de un solo valor.
+- Que una columna establecida como `PRIMARY KEY` en PostgreSQL genera implícitamente un índice único de tipo B-Tree en segundo plano, por lo que ya cuenta con optimización de búsqueda nativa.
+- Que el **Bitmap Heap Scan** opera en dos fases inteligentes: primero consulta el índice para construir un mapa de bits (*bitmap*) en memoria con las páginas de disco necesarias, y luego ordena esas páginas físicamente para evitar saltos aleatorios lentos en el disco duro (*random I/O*).
+- Que el **Incremental Sort** de PostgreSQL es una optimización avanzada que aprovecha prefijos de columnas ya ordenados (por ejemplo, mediante índices) para ordenar localmente solo los subgrupos en lugar de aplicar un ordenamiento global masivo.
+- Que los métodos de ordenamiento (`Sort Method`) cambian dinámicamente: usan *Top-N Heapsort* cuando hay un `LIMIT` pequeño, *Quicksort* si los datos caben en la RAM asignada por `work_mem`, o *External Merge* (a disco) si se supera dicha memoria.
+
+## 3.- Qué quedó sin hacer o falta estudiar más
+- Repasar a fondo el comportamiento de los índices compuestos y cómo el orden de las columnas en el índice afecta la eficiencia de las consultas con múltiples filtros.
+- Profundizar en el ajuste fino del parámetro `work_mem` en PostgreSQL para prevenir escrituras innecesarias a archivos temporales en disco (*spill to disk*) durante operaciones de ordenamiento pesadas.
+- Practicar más ejercicios de integración entre modelado estadístico en R (regresiones y pruebas de hipótesis) y consultas analíticas optimizadas en bases de datos relacionales[cite: 2].
