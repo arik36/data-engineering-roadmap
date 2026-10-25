@@ -386,3 +386,49 @@ date 2026-10-20
 - Repasar a fondo el comportamiento de los índices compuestos y cómo el orden de las columnas en el índice afecta la eficiencia de las consultas con múltiples filtros.
 - Profundizar en el ajuste fino del parámetro `work_mem` en PostgreSQL para prevenir escrituras innecesarias a archivos temporales en disco (*spill to disk*) durante operaciones de ordenamiento pesadas.
 - Practicar más ejercicios de integración entre modelado estadístico en R (regresiones y pruebas de hipótesis) y consultas analíticas optimizadas en bases de datos relacionales[cite: 2].
+
+-----------------
+date 2026-10-21
+
+## 1.- Qué produje hoy
+- Reestructuramos tres scripts (`transformar`, `clima`, `unir_fuentes`) con el mismo esqueleto: `error()`, `leer()`, `transformar()`, `escribir()` y `main(argv=None)` con `if __name__ == "__main__"`, de modo que se pueden importar sin que se ejecute nada.
+- Unificamos el contrato de stdout (solo se imprime la ruta del CSV de salida; los diagnósticos van a stderr) y una tabla de códigos de salida compartida en el epilog de los tres (0, 2, 3, 4, 5, 6, 7).
+- Adaptamos cada script a su caso: `clima` separó la petición HTTP (`leer`) del aplanado de `daily` (`transformar`) y distingue timeout o falta de conexión (6) de un error HTTP (7); `unir_fuentes` pasó de rutas fijas a los argumentos `--vix --gdp --sea --salida` y ahora escribe un CSV.
+- Escribimos 22 pruebas con pytest (7 de `transformar`, 9 de `clima`, 6 de `unir_fuentes`), usando `pytest.raises(SystemExit)` para los códigos de salida, `capsys` para el contrato de stdout, `tmp_path` para archivos temporales y `monkeypatch` para simular `requests.get` sin red.
+- Hicimos la "prueba de la prueba": rompimos el código a propósito (`mean` → `sum`, `how="left"` → `"inner"`, un `print` extra en `main`, un código de salida cambiado) y confirmamos que cada rotura hace fallar al menos un test.
+- Ajustamos las pruebas a la estructura real del proyecto (`python/scripts/`, archivos con sufijo `_unificado`, `pytest.ini` con `pythonpath = .`).
+
+## 2.- Qué descubrí
+- Que `transformar(df, grupo, tiempo, valor)` recibe por separado los **datos** (el df) y las **instrucciones** (los nombres de columna), por eso es genérica y se puede probar con un DataFrame inventado de tres filas, sin tocar disco ni red.
+- Que un script que ejecuta todo al importarse (como el `clima.py` original, con `parse_args()` a nivel de módulo) no se puede probar: pytest lo importa, argparse lee los argumentos de pytest y falla con código 2. Envolver la lógica en `main()` con `if __name__ == "__main__"` lo evita.
+- Que argparse ya reserva el código de salida 2 para errores de uso, así que ningún error propio puede usarlo (el `clima.py` original lo usaba para "sin conexión"); por eso la tabla compartida mueve ese caso al 6.
+- Que pytest, por defecto, agrega al path la carpeta del test y no la de los scripts, de ahí el `ModuleNotFoundError`; `pythonpath = .` en `pytest.ini` (o correr `python -m pytest`) lo resuelve.
+- Que una prueba solo vale si falla cuando rompes el código: si cambias `mean` por `sum` y todo sigue en verde, la prueba no estaba probando nada.
+
+## 3.- Qué quedó sin hacer o falta estudiar más
+- Correr `pytest -v` en `python/scripts` con pytest real y confirmar los 22 passed (aquí solo se validaron con un ejecutor de reemplazo), y repetir a mano la prueba de la prueba (`mean` → `sum`).
+- Probar cada script una vez con datos reales, sobre todo `clima.py` contra la API real (solo se probó con respuestas simuladas), y verificar con `ruta=$(python ...)` que stdout trae únicamente la ruta.
+- Decidir qué hacer con los scripts viejos (`clima.py`, etc.) que conviven con los `_unificado`: renombrarlos o archivarlos para no importar el equivocado.
+- Estudiar más `monkeypatch` y `pytest.mark.parametrize` (se usaron, pero sin profundizar) y evaluar si `error()`, `escribir()` y el epilog duplicados conviene moverlos a un `comun.py`.
+
+------
+date 2026-10-22
+
+## 1.- Qué produje hoy
+- Refactorizamos la arquitectura de errores de los scripts: eliminamos el uso directo de `sys.exit()` dentro de las funciones puras (`transformar`, `leer`), reemplazándolo por una clase de excepción personalizada `ErrorPipeline(Exception)` que recibe un mensaje y almacena localmente el código numérico (`self.codigo = codigo`).
+- Delegamos el control de salida al bloque principal: ajustamos `main()` para que actúe como interfaz de terminal, envolviendo la ejecución en un bloque `try... except ErrorPipeline as e:` que imprime el error en `stderr` y ejecuta `sys.exit(e.codigo)` únicamente cuando el script se corre de forma directa.
+- Estructuramos y ejecutamos pruebas unitarias precisas con `pytest`, utilizando el contexto defensivo `pytest.raises(ErrorPipeline) as exc_info` para capturar el objeto de la excepción y validar sus propiedades mediante aserciones directas (`assert exc_info.value.codigo == 3` o `5`).
+- Corregimos y reordenamos la lógica de validación dentro de `transformar()`: movimos la verificación de columnas totalmente nulas (`df[valor].isnull().all()`) antes de la validación de tipos, asegurando que un DataFrame sin datos devuelva correctamente el código de salida 3 en lugar de un código 5.
+- Resolvimos conflictos de importación al manejar excepciones homónimas de distintos módulos en un mismo archivo de pruebas mediante el uso de alias explícitos (`import ErrorPipeline as ErrorClima`, `import ErrorPipeline as ErrorUnir`).
+- Repasamos y analizamos planes de ejecución con `EXPLAIN ANALYZE` en PostgreSQL sobre las tablas con claves primarias, contrastando el comportamiento de las búsquedas optimizadas por índice (`Index Scan`) frente a los escaneos secuenciales (`Seq Scan`).
+
+## 2.- Qué descubrí
+- Que heredar de `Exception` (`class ErrorPipeline(Exception):`) es suficiente para que Python reconozca una clase como un error válido para `raise` y `except`, permitiendo desacoplar completamente la lógica de negocio de la terminal.
+- Que el uso de `as exc_info` junto con `pytest.raises` permite capturar la instancia exacta del objeto de la excepción (`exc_info.value`), lo que facilita verificar atributos personalizados como `.codigo` para comprobar contratos de error robustos.
+- Que al importar excepciones personalizadas con idéntico nombre desde diferentes scripts del roadmap, Python sobreescribe la referencia en el espacio de nombres a menos que se utilicen alias (`import ... as ...`), previniendo fallos inesperados en `pytest`.
+- Que el orden de las guardas de validación en el procesamiento de datos es crítico: validar primero si una columna carece de registros útiles (`isnull().all()` -> código 3) evita que validaciones de formato generales intercepten la ejecución y disparen códigos erróneos.
+
+## 3.- Qué quedó sin hacer o falta estudiar más
+- Completar la cobertura de pruebas unitarias para el resto de códigos de salida del pipeline (4, 6, 7) en los diferentes scripts del proyecto.
+- Ejecutar la suite completa de pruebas con `pytest` desde la raíz del repositorio para verificar que todos los módulos pasen en verde de forma concurrente.
+- Profundizar en la creación y mantenimiento de índices compuestos en PostgreSQL y su impacto real en los costos estimados por el optimizador mediante `EXPLAIN ANALYZE`.
