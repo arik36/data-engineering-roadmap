@@ -432,3 +432,22 @@ date 2026-10-22
 - Completar la cobertura de pruebas unitarias para el resto de códigos de salida del pipeline (4, 6, 7) en los diferentes scripts del proyecto.
 - Ejecutar la suite completa de pruebas con `pytest` desde la raíz del repositorio para verificar que todos los módulos pasen en verde de forma concurrente.
 - Profundizar en la creación y mantenimiento de índices compuestos en PostgreSQL y su impacto real en los costos estimados por el optimizador mediante `EXPLAIN ANALYZE`.
+
+----
+date 2026-10-25
+
+## 1.- Qué produje hoy
+- Implementamos la integración defensiva de pruebas unitarias al inicio del script orquestador (`pipelinev3.sh`), ejecutando `pytest` en modo silencioso (`-q`) y bloqueando la ejecución del pipeline con código de salida `9` si alguna prueba falla, protegiendo así la base de datos contra mutaciones con código defectuoso.
+- Verificamos y validamos el comportamiento del freno de seguridad del pipeline mediante un experimento de falla controlada: simulamos un fallo en `transformar.py`, comprobamos la interrupción anticipada del script y confirmamos mediante consultas en `psql` (`SELECT COUNT(*)`) que las tablas `gdp` y `vix` mantuvieron su integridad intacta.
+- Identificamos la causa raíz del fallo en `test_transformar.py`: diagnosticamos que alterar la agregación de la columna de tiempo a `"sum"` provocó que Pandas sumara los valores numéricos de los años ($2000 + 2001 = 4001$) en lugar de contar las observaciones ($2$), activando la aserción defensiva `assert np.int64(4001) == 2`.
+- Mantuvimos la arquitectura de manejo de errores basada en la clase `ErrorPipeline(Exception)` en `transformar.py`, preservando la separación entre la lógica de transformación pura y los códigos de salida controlados en `main()`.
+
+## 2.- Qué descubrí
+- Que un pipeline de datos robusto debe aplicar el principio de "cero confianza" (*zero trust*), condicionando cualquier modificación en almacenamiento persistente (PostgreSQL) al paso previo e incondicional de la suite de pruebas unitarias.
+- Que las fallas en aserciones de agregación (`AssertionError`) frecuentemente revelan discrepancias conceptuales entre la función aplicada (`sum` vs. `count`) y el tipo de dato subyacente de la columna seleccionada (por ejemplo, sumar años en lugar de contar registros).
+- Que la inspección rápida de los códigos de salida en Bash (`echo "$?"`) junto con validaciones de conteo directo en PostgreSQL proveen un método empírico e inobjetable para verificar la efectividad de los mecanismos de aislamiento y detención de scripts.
+
+## 3.- Qué quedó sin hacer o falta estudiar más
+- Corregir el comportamiento de agregación en `transformar.py` para asegurar que vuelva a contar registros (`count`) o actualizar la firma y las pruebas unitarias si se desea calcular una suma explícita.
+- Resolver la advertencia (*warning*) de Pandas en `test_unir_fuentes.py` especificando un formato explícito (`format=...`) al parsear fechas con `pd.to_datetime` para evitar la inferencia dinámica por elemento.
+- Investigar el uso de opciones estrictas de Bash (`set -euo pipefail`) dentro de `pipelinev3.sh` para asegurar que cualquier fallo no capturado detenga el script inmediatamente a lo largo de toda la cadena de comandos.

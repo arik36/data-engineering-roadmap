@@ -7,6 +7,13 @@ log(){
     printf '%s [%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$tipo" "$*" >&2
 }
 RAIZ="$(cd "$(dirname "$0")/.." && pwd)"
+
+log INFO "Corriendo pruebas..."
+pytest "$RAIZ/python/scripts/tests/" -q || {
+    log ERROR "Las pruebas fallaron. No se toca la base de datos."
+    exit 9
+}
+
 #aqui ${1:-} es el primer argumento pasado al script, y si no se pasa ningún argumento, se asigna un valor por defecto de cadena vacía.
 if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
 cat <<EOF
