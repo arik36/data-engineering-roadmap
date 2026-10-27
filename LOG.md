@@ -451,3 +451,24 @@ date 2026-10-25
 - Corregir el comportamiento de agregación en `transformar.py` para asegurar que vuelva a contar registros (`count`) o actualizar la firma y las pruebas unitarias si se desea calcular una suma explícita.
 - Resolver la advertencia (*warning*) de Pandas en `test_unir_fuentes.py` especificando un formato explícito (`format=...`) al parsear fechas con `pd.to_datetime` para evitar la inferencia dinámica por elemento.
 - Investigar el uso de opciones estrictas de Bash (`set -euo pipefail`) dentro de `pipelinev3.sh` para asegurar que cualquier fallo no capturado detenga el script inmediatamente a lo largo de toda la cadena de comandos.
+
+----
+date 2026-10-26
+
+## 1.- Qué produje hoy
+- Revisamos y corregimos el concepto de la primera fase del pipeline (`pipeline.sh`), aclarando que la suite de `pytest` ejecutada al inicio no valida los datos recién descargados ni realiza un *pre-flight check* de infraestructura, sino que actúa como una prueba defensiva de software para verificar el comportamiento del código ante casos límite (columnas faltantes, DataFrames vacíos, nulos) antes de aplicar operaciones destructivas (`TRUNCATE`) en PostgreSQL.
+- Evaluamos el funcionamiento técnico de las cláusulas `ON CONFLICT DO NOTHING` y `DO UPDATE` (utilizando la pseudo-tabla `EXCLUDED`), confirmando su uso para preservar registros antiguos o actualizar filas en caso de colisiones de claves primarias o restricciones únicas.
+- Analizamos el comportamiento interno de los índices B-Tree en PostgreSQL frente al escaneo de tablas (*heap*), identificando que el motor de la base de datos opta por un *Sequential Scan* en lugar de usar un índice cuando la consulta abarca un alto porcentaje de filas (15%-20%+), evitando así el costo de lecturas aleatorias (*Random I/O*) entre el índice y las páginas del *heap*.
+- Analizamos la consulta SQL de auditoría de nulos sobre la columna `close` de la tabla `vix`, identificando que la fórmula `(COUNT(*) - COUNT(close))` calcula la cantidad de valores nulos y que la multiplicación por `100.0` fuerza una división con punto flotante antes de redondear a 2 decimales con `ROUND()`.
+- Validamos las consultas SQL para los límites históricos del VIX (`MIN`, `MAX`, `AVG`), contrastando los datos de cierre observados en la base de datos (`MIN`: 9.14, `MAX`: 82.69) frente al filtro de sanidad técnica (`close < 5 OR close > 100`) utilizado para evitar falsos positivos por récords históricos del mercado.
+
+## 2.- Qué descubrí
+- Que las filas de una tabla en PostgreSQL (el *heap*) se almacenan de forma desordenada en disco y que los índices B-Tree no reorganizan las filas físicas, sino que mantienen un mapa ordenado de punteros (TIDs / *Tuple IDs*) que apuntan a la página y número de fila exactos dentro del *heap*.
+- Que el uso de límites de sanidad amplios (como `5` y `100` en el VIX) en los filtros de validación de calidad responde a la necesidad de otorgar un margen de seguridad (*sanity bounds*) para distinguir fallas de sistema o datos corruptos de nuevos récords históricos en las series de tiempo.
+- Que existe una distinción fundamental entre los precios de cierre diarios (`Close`) y los récords intradía (`High`/`Low`) del VIX, originados por el cálculo en tiempo real de las opciones del S&P 500 en la CBOE durante la sesión bursátil.
+- Que para validar datos internos o no públicos (donde no existen referentes históricos de dominio público), se deben construir contratos de datos (*data contracts*), validaciones de rango dinámicas basadas en estadísticas del propio histórico (como Z-Score o desviaciones estándar) y reglas lógicas del negocio.
+
+## 3.- Qué quedó sin hacer o falta estudiar más
+- Corregir el detalle sintáctico de multiplicación explícita (`100.0 * (...)`) en la consulta SQL de cálculo de tasa de nulos.
+- Explorar el uso del comando `CLUSTER` en PostgreSQL para ordenar físicamente una tabla en disco según un índice B-Tree y evaluar sus implicaciones en el rendimiento de lectura frente al costo de mantenimiento.
+- Estudiar la implementación de consultas de validación dinámicas basadas en medias móviles y desviación estándar para la detección automática de anomalías en datos propietarios sin usar constantes fijas.
